@@ -16,6 +16,13 @@ The point of this repo is to show our pattern of de-coupling the imperative Esri
 
 ---
 
+## Configuration
+
+Please find the ``config.json`` under ``public/config``!
+
+
+---
+
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 

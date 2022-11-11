@@ -8,7 +8,6 @@ import GraphicsLayer from "@arcgis/core/layers/GraphicsLayer";
 // import { reaction } from "mobx";
 import { Stores } from "../Stores/Stores";
 import { Config } from "Config/types/config";
-import getMapModuleEsriElement from "./MapModuleEsriElement";
 
 export default class MapController {
   private stores!: Stores;
@@ -66,7 +65,6 @@ export default class MapController {
         this.stores.mapStore.setCenter(center);
       });
       v.map.add(this.graphicsLayer);
-      // this.addMapModules();
     });
 
     // reaction(
@@ -75,20 +73,6 @@ export default class MapController {
     //     this.initLayers();
     //   }
     // );
-  };
-
-  private readonly addMapModules = (): void => {
-    const { widgets } = this.config;
-    widgets.forEach((widgets) => {
-      const mapModuleElement = getMapModuleEsriElement(
-        widgets,
-        this.config,
-        this.stores.mapStore
-      );
-      if (mapModuleElement !== null) {
-        this.stores.mapStore.mapView!.ui.add(mapModuleElement, "top-left");
-      }
-    });
   };
 
   public readonly getGraphicsLayer = (): GraphicsLayer => {

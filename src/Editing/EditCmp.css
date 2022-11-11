@@ -1,11 +1,8 @@
-#editorWrapper {
+#editComponent {
+    justify-content: space-evenly;
     position: absolute;
     top: 0px;
     left: 0px;
-}
-
-#editComponent {
-    justify-content: space-evenly;
 }
 
 #editorWidget {

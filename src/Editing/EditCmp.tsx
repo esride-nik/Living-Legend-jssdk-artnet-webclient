@@ -33,22 +33,18 @@ const EditCmp: React.FC<EditCmpProps> = observer(() => {
     editStore.unsavedEditsAvailable
   ) {
     return (
-      <div id="editorWrapper">
-        <div
-          ref={editContext.editorWrapperWrapperNode}
-          id="editComponent"
-          className="esri-widget esri-editor-widget"
-        >
-          {appStore.config.editTools.map((toolName: CustomEditTools) => (
-            <CustomEditCmp
-              toolName={toolName}
-              actionButtonClassName={editStore.getActionButtonClassName(
-                toolName
-              )}
-              disabled={!editStore.isToolEnabled(toolName)}
-            />
-          ))}
-        </div>
+      <div
+        ref={editContext.editorWrapperWrapperNode}
+        id="editComponent"
+        className="esri-widget esri-editor-widget"
+      >
+        {appStore.config.editTools.map((toolName: CustomEditTools) => (
+          <CustomEditCmp
+            toolName={toolName}
+            actionButtonClassName={editStore.getActionButtonClassName(toolName)}
+            disabled={!editStore.isToolEnabled(toolName)}
+          />
+        ))}
         <div
           ref={editContext.editorNode}
           id="editorWidget"

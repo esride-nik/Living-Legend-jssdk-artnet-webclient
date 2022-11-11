@@ -14,7 +14,7 @@ const getEditEsriElement = (config: Config, mapStore: MapStore): Expand => {
   });
   expand.watch("expanded", (expanded: boolean) => {
     console.debug("Editor expand", expanded);
-    if (!expanded) {
+    if (!expanded && editController.editor.activeWorkflow) {
       editController.editor.cancelWorkflow();
     }
   });

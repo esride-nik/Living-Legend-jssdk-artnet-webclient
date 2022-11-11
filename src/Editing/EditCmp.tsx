@@ -20,21 +20,22 @@ const EditCmp: React.FC<EditCmpProps> = observer(() => {
   // Editor Widget must be initialized after first render, because we need the DOM node ref. (So this wouldn't work in EditEsriElement right after new Expand().)
   useEffect(() => {
     console.log("EditCmp effect");
-    if (mapStore.mapView && editContext.editor === undefined) {
+    if (mapStore && mapStore.mapView && editContext.editor === undefined) {
       editContext.init(stores);
     }
-  }, [mapStore.mapView, editContext, stores]);
+  }, [mapStore, editContext, stores]);
 
-  if (editStore.activeCustomEditTool === undefined) {
+  if (editStore && editStore.activeCustomEditTool === undefined) {
     return <div>{editStore.activeCustomEditTool}</div>;
   }
   if (
-    editStore.activeCustomEditTool !== undefined ||
-    editStore.unsavedEditsAvailable
+    editStore &&
+    (editStore.activeCustomEditTool !== undefined ||
+      editStore.unsavedEditsAvailable)
   ) {
     return (
       <div
-        ref={editContext.editorWrapperWrapperNode}
+        ref={editContext.editComponentNode}
         id="editComponent"
         className="esri-widget esri-editor-widget"
       >

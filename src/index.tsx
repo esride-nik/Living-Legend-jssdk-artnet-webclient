@@ -5,7 +5,6 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { StoreProvider } from "./Stores/StoreProvider";
 import { getConfiguration } from "./Config/configuration";
-import { Config } from "./Config/types/config";
 
 let configuration: any = undefined;
 (async () => {

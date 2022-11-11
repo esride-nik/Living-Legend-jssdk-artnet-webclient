@@ -27,7 +27,7 @@ type SketchCreateEvent = {
 
 export default class EditController {
   editorNode = React.createRef<HTMLDivElement>();
-  editorWrapperWrapperNode = React.createRef<HTMLDivElement>();
+  editComponentNode = React.createRef<HTMLDivElement>();
   public editor!: Editor;
   private sketchHandle!: IHandle;
   private customEditFeature!: __esri.Collection<Graphic>;

@@ -8,6 +8,9 @@ import GraphicsLayer from "@arcgis/core/layers/GraphicsLayer";
 // import { reaction } from "mobx";
 import { Stores } from "../Stores/Stores";
 import { Config } from "Config/types/config";
+import ReactDOM from "react-dom";
+import EditCmp from "Editing/EditCmp";
+import { StoreProvider } from "Stores/StoreProvider";
 
 export default class MapController {
   private stores!: Stores;
@@ -59,12 +62,25 @@ export default class MapController {
       });
     }
 
-    this.mapView.when((v: MapView) => {
-      this.stores.mapStore.setMapView(v);
-      v.watch("center", (center: Point) => {
+    this.mapView.when(() => {
+      this.stores.mapStore.setMapView(this.mapView);
+      this.mapView.watch("center", (center: Point) => {
         this.stores.mapStore.setCenter(center);
       });
-      v.map.add(this.graphicsLayer);
+      this.mapView.map.add(this.graphicsLayer);
+
+      let node = document.getElementById("editWrapper");
+      if (!node) {
+        node = document.createElement("div");
+        node.setAttribute("id", "editWrapper");
+        this.mapView.ui.add(node, "top-left");
+        ReactDOM.render(
+          <StoreProvider config={this.config}>
+            <EditCmp />
+          </StoreProvider>,
+          node
+        );
+      }
     });
 
     // reaction(

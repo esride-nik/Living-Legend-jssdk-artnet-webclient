@@ -9,8 +9,7 @@ import * as webMercatorUtils from "@arcgis/core/geometry/support/webMercatorUtil
 import Layer from "@arcgis/core/layers/Layer";
 import FeatureLayer from "@arcgis/core/layers/FeatureLayer";
 import { Stores } from "../Stores/Stores";
-import { StepId } from "./EditStore";
-import { CustomEditTools } from "Config/types/config";
+import { CustomEditTools, StepId } from "./types";
 
 type SketchCreateEvent = {
   graphic: __esri.Graphic;
@@ -193,12 +192,6 @@ export default class EditController {
         case "CloseHoles":
           this.executeCloseHoles();
           break;
-        case "Union":
-          this.executeUnion();
-          break;
-        case "Difference":
-          this.executeDifference();
-          break;
         default:
       }
     }
@@ -332,70 +325,6 @@ export default class EditController {
       this.customEditFeatures.getItemAt(0).geometry = resultGeometry;
       this.removeSketchGraphics();
     }
-  };
-
-  private readonly executeUnion = (): void => {
-    console.warn(`executeUnion not implemented`);
-
-    // this.editor.viewModel.sketchViewModel.complete();
-    // if (
-    //   this.stores.editStore.editorFeature?.geometry?.type === "polygon" &&
-    //   Object.keys(this.stores.mapStore.currentSelection).length > 0
-    // ) {
-    //   const { currentSelection } = this.stores.mapStore;
-    //   let selectedGeometriesOnSelectedLayer = (
-    //     currentSelection[
-    //       this.stores.featureTableStore.selectedLayer
-    //     ] as Graphic[]
-    //   ).map((s: Graphic) => s.geometry);
-    //   selectedGeometriesOnSelectedLayer = this.projectIfNecessary(
-    //     selectedGeometriesOnSelectedLayer,
-    //     this.stores.editStore.editorFeature.geometry.spatialReference
-    //   );
-    //   const resultGeometry = geometryEngine.union([
-    //     this.stores.editStore.editorFeature.geometry,
-    //     ...selectedGeometriesOnSelectedLayer,
-    //   ]) as Geometry;
-    //   this.stores.editStore.editorFeature.geometry = resultGeometry;
-    //   this.removeSketchGraphics();
-    //   this.customEditFeature.getItemAt(0).geometry = resultGeometry;
-    // } else {
-    //   console.warn(
-    //     `Union not possible. ${this.stores.mapStore.fullSelection.length} polygon geometries selected.`
-    //   );
-    // }
-  };
-
-  private readonly executeDifference = (): void => {
-    console.warn(`executeDifference not implemented`);
-
-    // this.editor.viewModel.sketchViewModel.complete();
-    // if (
-    //   this.stores.editStore.editorFeature?.geometry?.type === "polygon" &&
-    //   Object.keys(this.stores.mapStore.currentSelection).length > 0
-    // ) {
-    //   const { currentSelection } = this.stores.mapStore;
-    //   let selectedGeometriesOnSelectedLayer = (
-    //     currentSelection[
-    //       this.stores.featureTableStore.selectedLayer
-    //     ] as Graphic[]
-    //   ).map((s: Graphic) => s.geometry);
-    //   selectedGeometriesOnSelectedLayer = this.projectIfNecessary(
-    //     selectedGeometriesOnSelectedLayer,
-    //     this.stores.editStore.editorFeature.geometry.spatialReference
-    //   );
-    //   const resultGeometry = geometryEngine.difference(
-    //     this.stores.editStore.editorFeature.geometry,
-    //     geometryEngine.union(selectedGeometriesOnSelectedLayer)
-    //   ) as Geometry;
-    //   this.stores.editStore.editorFeature.geometry = resultGeometry;
-    //   this.removeSketchGraphics();
-    //   this.customEditFeature.getItemAt(0).geometry = resultGeometry;
-    // } else {
-    //   console.warn(
-    //     `Difference not possible. ${this.stores.mapStore.fullSelection.length} polygon geometries selected.`
-    //   );
-    // }
   };
 
   private readonly removeSketchGraphics = (): void => {

@@ -7,7 +7,8 @@ import { useEffect } from "react";
 import { useStores } from "../Stores/useStores";
 import { useEditContext } from "./useEditContext";
 import CustomEditCmp from "./CustomEditCmp";
-import { ConfigWidget, CustomEditTools } from "Config/types/config";
+import { ConfigWidget } from "Config/types/config";
+import { CustomEditTools } from "./types";
 
 interface EditCmpProps {}
 

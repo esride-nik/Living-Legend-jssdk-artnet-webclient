@@ -13,8 +13,6 @@
         {
             "name": "edit",
             "editTools": [
-                "Union",
-                "Difference",
                 "DrawUnion",
                 "DrawDifference",
                 "ConvexHull",

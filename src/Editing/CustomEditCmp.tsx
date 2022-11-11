@@ -2,7 +2,7 @@ import "./EditCmp.css";
 import { observer } from "mobx-react";
 import * as React from "react";
 import { useEditContext } from "./useEditContext";
-import { CustomEditTools } from "Config/types/config";
+import { CustomEditTools } from "./types";
 
 export interface CustomEditCmpProps {
   toolName: CustomEditTools;

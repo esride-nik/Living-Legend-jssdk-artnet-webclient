@@ -1,26 +1,9 @@
 import Graphic from "@arcgis/core/Graphic";
 import FeatureLayer from "@arcgis/core/layers/FeatureLayer";
 import Editor from "@arcgis/core/widgets/Editor";
-import { CustomEditTools } from "Config/types/config";
 import { makeObservable, observable } from "mobx";
 import AppStore from "../Stores/AppStore";
-
-export type GeometryType =
-  | undefined
-  | "point"
-  | "multipoint"
-  | "polyline"
-  | "polygon"
-  | "extent"
-  | "mesh";
-export type StepId =
-  | undefined
-  | "awaiting-feature-to-update"
-  | "awaiting-update-feature-candidate"
-  | "editing-existing-feature"
-  | "adding-attachment"
-  | "editing-attachment"
-  | "creating-features";
+import { CustomEditTools, StepId } from "./types";
 
 class EditStore {
   public activeCustomEditTool: CustomEditTools = "Off";
@@ -73,12 +56,6 @@ class EditStore {
       case "CloseHoles":
         cssClasses += " esri-icon-radio-checked";
         break;
-      case "Union":
-        cssClasses += " esri-icon-plus-circled";
-        break;
-      case "Difference":
-        cssClasses += " esri-icon-minus-circled";
-        break;
       default:
         cssClasses += " esri-icon-deny";
         break;
@@ -125,18 +102,6 @@ class EditStore {
           this.editorWorkflowStep === "editing-existing-feature"
         );
       case "CloseHoles":
-        return (
-          this.isEditingExistingFeature &&
-          this.editFeatureIsPolygon &&
-          this.editorWorkflowStep === "editing-existing-feature"
-        );
-      case "Union":
-        return (
-          this.isEditingExistingFeature &&
-          this.editFeatureIsPolygon &&
-          this.editorWorkflowStep === "editing-existing-feature"
-        );
-      case "Difference":
         return (
           this.isEditingExistingFeature &&
           this.editFeatureIsPolygon &&

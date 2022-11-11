@@ -1,3 +1,5 @@
+import { CustomEditTools } from "Editing/types";
+
 export interface Config {
   webMapItemId: string;
   wkid: number;
@@ -13,20 +15,3 @@ export type ConfigWidget = {
   name: "edit" | "home";
   editTools?: CustomEditTools[];
 };
-
-export type CustomEditTools =
-  | "SingleEdit"
-  | "Union"
-  | "Difference"
-  | "DrawUnion"
-  | "DrawDifference"
-  | "Cut"
-  | "Reshape"
-  | "ConvexHull"
-  | "CloseHoles"
-  | "WeakFit"
-  | "StrongFit"
-  | "ClearGeometry"
-  | "DeleteGeometry"
-  | "EditVertices"
-  | "Off";

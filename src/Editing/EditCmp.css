@@ -1,12 +1,9 @@
 #editComponent {
     justify-content: space-evenly;
-    position: absolute;
-    top: 0px;
-    left: 0px;
 }
 
 #editorWidget {
-    max-height:100vh;
+    max-height:90vh;
     min-width: 300px !important;
     width: unset !important;
 }

@@ -32,7 +32,9 @@ export default class MapController {
   mapNode = React.createRef<HTMLDivElement>();
 
   initMap = (): void => {
-    console.debug("init Map", this);
+    console.debug("init Map", this.mapView ? "returning" : "initializing");
+    if (this.mapView) return;
+
     if (!this.stores)
       throw new Error(
         `setStores() needs to be called with a valid object before the rest of the MapController works.`

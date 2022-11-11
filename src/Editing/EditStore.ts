@@ -44,6 +44,9 @@ class EditStore {
         ? "activeTool"
         : "";
     switch (toolName) {
+      case "Copy":
+        cssClasses += " esri-icon-duplicate";
+        break;
       case "DrawUnion":
         cssClasses += " esri-icon-up";
         break;
@@ -83,6 +86,12 @@ class EditStore {
     console.debug(`${toolName} enabled`);
     // return this.isEditingExistingFeature && this.editFeatureIsPolygon && this.editorWorkflowStep === 'editing-existing-feature';
     switch (toolName) {
+      case "Copy":
+        return (
+          this.isEditingExistingFeature &&
+          this.editFeatureIsPolygon &&
+          this.editorWorkflowStep === "editing-existing-feature"
+        );
       case "DrawUnion":
         return (
           this.isEditingExistingFeature &&

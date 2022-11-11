@@ -1,4 +1,5 @@
 export type CustomEditTools =
+  | "Copy"
   | "DrawUnion"
   | "DrawDifference"
   | "ConvexHull"

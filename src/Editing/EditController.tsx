@@ -178,6 +178,10 @@ export default class EditController {
         this.stores.editStore.sketchSymbol;
 
       switch (clickedTool) {
+        case "Copy":
+          this.stores.editStore.activeCustomEditTool = clickedTool;
+          this.activateCopy();
+          break;
         case "DrawUnion":
           this.stores.editStore.activeCustomEditTool = clickedTool;
           this.activateDrawUnion();
@@ -225,6 +229,41 @@ export default class EditController {
       });
     }
     return geometries;
+  };
+
+  private readonly activateCopy = (): void => {
+    //@ts-ignore
+    this.editor.view.on("click", async (clickEvt: any) => {
+      console.log("activateCopy", clickEvt);
+      const hitTestResults = await this.editor.view.hitTest(
+        clickEvt.screenPoint
+      );
+      const hitTestMatches = hitTestResults.results
+        .filter((viewHit: __esri.ViewHit) => viewHit.type === "graphic")
+        .filter(
+          (viewHit: __esri.ViewHit) =>
+            (viewHit as __esri.GraphicHit).graphic?.geometry?.type ===
+            this.stores.editStore.editorFeature?.geometry.type
+        );
+      const hitTestGeometries = hitTestMatches.map(
+        (viewHit: __esri.ViewHit) =>
+          (viewHit as __esri.GraphicHit).graphic.geometry
+      );
+      if (this.stores.editStore.editorFeature?.geometry?.spatialReference) {
+        const projectedGeometries = this.projectIfNecessary(
+          hitTestGeometries,
+          this.stores.editStore.editorFeature.geometry.spatialReference
+        );
+        const resultGeometry = geometryEngine.union([
+          this.stores.editStore.editorFeature.geometry,
+          ...projectedGeometries,
+        ]);
+        this.stores.editStore.editorFeature.geometry = resultGeometry;
+
+        this.removeSketchGraphics();
+        this.customEditFeatures.getItemAt(0).geometry = resultGeometry;
+      }
+    });
   };
 
   private readonly activateDrawUnion = (): void => {

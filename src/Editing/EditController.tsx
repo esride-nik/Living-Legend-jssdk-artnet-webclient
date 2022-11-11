@@ -9,7 +9,8 @@ import * as webMercatorUtils from "@arcgis/core/geometry/support/webMercatorUtil
 import Layer from "@arcgis/core/layers/Layer";
 import FeatureLayer from "@arcgis/core/layers/FeatureLayer";
 import { Stores } from "../Stores/Stores";
-import { CustomEditTools, StepId } from "./EditStore";
+import { StepId } from "./EditStore";
+import { CustomEditTools } from "Config/types/config";
 
 type SketchCreateEvent = {
   graphic: __esri.Graphic;
@@ -48,7 +49,6 @@ export default class EditController {
     );
   }
 
-  // WORKAROUND for #BUG-000149276: Init on expand
   public readonly init = (stores: Stores): void => {
     this.stores = stores;
     this.editor = new Editor({
@@ -59,18 +59,6 @@ export default class EditController {
     this.stores.mapStore.mapView?.map.allLayers.map((l: Layer) =>
       console.log(l.id, l.type, l.visible)
     );
-    // const featureLayersInMap =
-    //   this.stores.mapStore.mapView?.map.allLayers.filter(
-    //     (layer: Layer) => layer.type === "feature"
-    //   );
-    // if (featureLayersInMap !== undefined && featureLayersInMap.length > 0) {
-    //   const layerInfos: __esri.LayerInfo[] = [];
-    //   // TODO: create layer info when layer is fully loaded and check if config fields actually exist
-    //   featureLayersInMap.forEach((layer: Layer) =>
-    //     layerInfos.push(this.createLayerInfo(layer as FeatureLayer, layer.id))
-    //   );
-    //   this.editor.layerInfos = layerInfos;
-    // }
 
     this.editor.when(() => {
       console.debug("Editor initialized.", this.editor);
@@ -99,39 +87,6 @@ export default class EditController {
           if (stepId !== "editing-existing-feature") {
             this.stores.editStore.activeCustomEditTool = "Off";
             this.removeSketchGraphics();
-          } else {
-            // editing-existing-feature
-            // eslint-disable-next-line no-lonely-if
-            // if (
-            //   this.stores.editStore.currentEditLayerConfig
-            //     ?.updateAttributesEnabled === false
-            // ) {
-            //   // hide feature form if attribute editing disabled
-            //   const domNode = document.querySelector(
-            //     "div#editorWidget calcite-flow"
-            //   );
-            //   if (domNode) {
-            //     const shadowRoot = domNode?.shadowRoot;
-            //     const slots = shadowRoot?.querySelectorAll("slot");
-            //     if (slots !== undefined) {
-            //       slots.forEach((slot: HTMLSlotElement) => {
-            //         // We need this event listener because the shadow DOM changes after the "stepId" event handler we're in. We need to add the class after the slotchange.
-            //         slot.addEventListener("slotchange", () => {
-            //           const nodes = slot.assignedNodes();
-            //           nodes.forEach((node: Node) =>
-            //             (node as Element).classList.add("hide-feature-form")
-            //           );
-            //         });
-            //       });
-            //     }
-            //     const link = document.querySelector(
-            //       "link[href^='FeatureFormHiddenStyle.']"
-            //     );
-            //     if (shadowRoot && link) {
-            //       shadowRoot.appendChild(link.cloneNode());
-            //     }
-            //   }
-            // }
           }
         }
       );
@@ -187,52 +142,6 @@ export default class EditController {
         "none";
     }
   };
-
-  //   private readonly createLayerInfo = (
-  //     featureLayer: FeatureLayer,
-  //     layerId: string
-  //   ): __esri.LayerInfo => {
-  //     const editLayerConfig = this.stores.editStore.getEditLayerConfig(layerId);
-  //     if (editLayerConfig !== undefined) {
-  //       return {
-  //         layer: featureLayer,
-  //         enabled: true,
-  //         addEnabled: editLayerConfig.addEnabled ?? true,
-  //         deleteEnabled: editLayerConfig.deleteEnabled ?? true,
-  //         updateEnabled: editLayerConfig.updateEnabled ?? true,
-  //         formTemplate: this.createFormTemplate(editLayerConfig, layerId),
-  //       } as __esri.LayerInfo;
-  //     }
-
-  //     // turn off editing for all layers not explicitely mentioned in the editing.json config
-  //     return {
-  //       layer: featureLayer,
-  //       enabled: false,
-  //     } as __esri.LayerInfo;
-  //   };
-
-  //   private readonly createFormTemplate = (
-  //     editLayerConfig: ImmutableObject<TEditLayer>,
-  //     layerId: string
-  //   ): FormTemplate => {
-  //     const elements: FieldElement[] = [];
-  //     const readonlyFieldNames = editLayerConfig.readonlyFieldNames ?? [];
-  //     const addFieldElement = (fieldName: string): void => {
-  //       const label = this.stores.appStore.t(
-  //         `map.layers.${layerId}.attributes.${fieldName}`
-  //       );
-  //       const editable = !readonlyFieldNames.includes(fieldName);
-  //       elements.push(new FieldElement({ fieldName, editable, label }));
-  //     };
-  //     editLayerConfig.formTemplateElementFieldNames.forEach((fieldName) =>
-  //       addFieldElement(fieldName)
-  //     );
-  //     return new FormTemplate({
-  //       title: this.stores.appStore.t(`map.layers.${layerId}.title`),
-  //       description: this.stores.appStore.t(`map.layers.${layerId}.description`),
-  //       elements,
-  //     });
-  //   };
 
   public async onCustomEditToolButtonClick(
     clickedTool: CustomEditTools

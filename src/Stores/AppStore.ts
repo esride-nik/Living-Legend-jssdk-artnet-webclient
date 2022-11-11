@@ -1,13 +1,9 @@
-// import { i18n, TOptions } from 'i18next';
 import { makeObservable, observable, action } from "mobx";
 import { Config } from "../Config/types/config";
-// import TConfig from './config';
 
 class AppStore {
   public config: Config;
-
   public width = window.innerWidth;
-
   public height = window.innerHeight;
 
   public readonly handleResize = (): void => {

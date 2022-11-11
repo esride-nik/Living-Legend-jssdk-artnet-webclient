@@ -1,27 +1,10 @@
 import Graphic from "@arcgis/core/Graphic";
 import FeatureLayer from "@arcgis/core/layers/FeatureLayer";
 import Editor from "@arcgis/core/widgets/Editor";
+import { CustomEditTools } from "Config/types/config";
 import { makeObservable, observable } from "mobx";
 import AppStore from "../Stores/AppStore";
 
-export type CustomEditTools =
-  | "SingleEdit"
-  | "Union"
-  | "Difference"
-  | "DrawUnion"
-  | "DrawDifference"
-  | "Cut"
-  | "Reshape"
-  | "ConvexHull"
-  | "CloseHoles"
-  | "WeakFit"
-  | "StrongFit"
-  | "ClearGeometry"
-  | "DeleteGeometry"
-  | "EditVertices"
-  | "Copy"
-  | "Off"
-  | "EZGStyle";
 export type GeometryType =
   | undefined
   | "point"
@@ -96,9 +79,6 @@ class EditStore {
       case "Difference":
         cssClasses += " esri-icon-minus-circled";
         break;
-      case "Copy":
-        cssClasses += " esri-icon-duplicate";
-        break;
       default:
         cssClasses += " esri-icon-deny";
         break;
@@ -157,12 +137,6 @@ class EditStore {
           this.editorWorkflowStep === "editing-existing-feature"
         );
       case "Difference":
-        return (
-          this.isEditingExistingFeature &&
-          this.editFeatureIsPolygon &&
-          this.editorWorkflowStep === "editing-existing-feature"
-        );
-      case "Copy":
         return (
           this.isEditingExistingFeature &&
           this.editFeatureIsPolygon &&

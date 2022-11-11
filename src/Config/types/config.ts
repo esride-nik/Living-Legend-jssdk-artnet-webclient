@@ -6,11 +6,13 @@ export interface Config {
   minScale: number;
   maxScale: number;
   basemap: string;
-  widgets: WidgetName[];
-  editTools: CustomEditTools[];
+  widgets: ConfigWidget[];
 }
 
-export type WidgetName = "edit" | "home";
+export type ConfigWidget = {
+  name: "edit" | "home";
+  editTools?: CustomEditTools[];
+};
 
 export type CustomEditTools =
   | "SingleEdit"

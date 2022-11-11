@@ -7,8 +7,7 @@ import { useEffect } from "react";
 import { useStores } from "../Stores/useStores";
 import { useEditContext } from "./useEditContext";
 import CustomEditCmp from "./CustomEditCmp";
-import { CustomEditTools } from "./EditStore";
-// import { useMainContext } from '../../core/Main/useMainContext';
+import { ConfigWidget, CustomEditTools } from "Config/types/config";
 
 interface EditCmpProps {}
 
@@ -33,13 +32,22 @@ const EditCmp: React.FC<EditCmpProps> = observer(() => {
     (editStore.activeCustomEditTool !== undefined ||
       editStore.unsavedEditsAvailable)
   ) {
+    const editWidget = appStore.config.widgets.filter(
+      (w: ConfigWidget) => w.name === "edit"
+    )
+      ? appStore.config.widgets.filter(
+          (w: ConfigWidget) => w.name === "edit"
+        )[0]
+      : undefined;
+    const editTools =
+      editWidget && editWidget.editTools ? editWidget.editTools : [];
     return (
       <div
         ref={editContext.editComponentNode}
         id="editComponent"
         className="esri-widget esri-editor-widget"
       >
-        {appStore.config.editTools.map((toolName: CustomEditTools) => (
+        {editTools.map((toolName: CustomEditTools) => (
           <CustomEditCmp
             toolName={toolName}
             actionButtonClassName={editStore.getActionButtonClassName(toolName)}

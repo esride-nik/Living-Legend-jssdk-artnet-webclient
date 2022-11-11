@@ -6,4 +6,25 @@ export interface Config {
   minScale: number;
   maxScale: number;
   basemap: string;
+  widgets: WidgetName[];
+  editTools: CustomEditTools[];
 }
+
+export type WidgetName = "edit" | "home";
+
+export type CustomEditTools =
+  | "SingleEdit"
+  | "Union"
+  | "Difference"
+  | "DrawUnion"
+  | "DrawDifference"
+  | "Cut"
+  | "Reshape"
+  | "ConvexHull"
+  | "CloseHoles"
+  | "WeakFit"
+  | "StrongFit"
+  | "ClearGeometry"
+  | "DeleteGeometry"
+  | "EditVertices"
+  | "Off";

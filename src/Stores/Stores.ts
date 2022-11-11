@@ -3,28 +3,27 @@ import AppStore from "./AppStore";
 import MapStore from "../Map/MapStore";
 import StatusStore from "../Status/StatusStore";
 import { Config } from "../Config/types/config";
+import EditStore from "Editing/EditStore";
 
 export interface IStores {
   appStore: AppStore;
   mapStore: MapStore;
+  editStore: EditStore;
   statusStore: StatusStore;
 }
 
 export class Stores implements IStores {
   appStore: AppStore;
   mapStore: MapStore;
+  editStore: EditStore;
   statusStore: StatusStore;
 
   static instance: IStores;
 
-  // Singleton pattern: getInstance and private constructor
-  static getInstance(config: Config | undefined = undefined): IStores {
+  // // Singleton pattern: getInstance and private constructor
+  static getInstance(config: Config): IStores {
     if (Stores.instance === undefined) {
-      if (config !== undefined) {
-        Stores.instance = new Stores(config);
-      } else {
-        throw new Error(`Need configuration to initialize stores.`);
-      }
+      Stores.instance = new Stores(config);
     }
     return Stores.instance;
   }
@@ -35,6 +34,7 @@ export class Stores implements IStores {
     // initialize all stores in correct order
     this.appStore = new AppStore(config);
     this.mapStore = new MapStore(this.appStore);
+    this.editStore = new EditStore(this.appStore);
     this.statusStore = new StatusStore(this.appStore);
   }
 }

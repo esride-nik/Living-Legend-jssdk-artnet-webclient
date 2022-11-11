@@ -7,18 +7,16 @@ import GraphicsLayer from "@arcgis/core/layers/GraphicsLayer";
 
 // import { reaction } from "mobx";
 import { Stores } from "../Stores/Stores";
-import MapStore from "./MapStore";
 import { Config } from "Config/types/config";
+import getMapModuleEsriElement from "./MapModuleEsriElement";
 
 export default class MapController {
-  private stores!: Stores | undefined;
-  private mapStore!: MapStore;
+  private stores!: Stores;
   private config!: Config;
 
   // setStores needs to be called with a valid object before the rest of the class works
   setStores = (stores: Stores): void => {
     this.stores = stores;
-    this.mapStore = stores.mapStore;
     this.config = stores.appStore.config;
   };
 
@@ -63,11 +61,12 @@ export default class MapController {
     }
 
     this.mapView.when((v: MapView) => {
-      this.mapStore.setMapView(v);
+      this.stores.mapStore.setMapView(v);
       v.watch("center", (center: Point) => {
-        this.mapStore.setCenter(center);
+        this.stores.mapStore.setCenter(center);
       });
       v.map.add(this.graphicsLayer);
+      this.addMapModules();
     });
 
     // reaction(
@@ -76,6 +75,20 @@ export default class MapController {
     //     this.initLayers();
     //   }
     // );
+  };
+
+  private readonly addMapModules = (): void => {
+    const { widgets } = this.config;
+    widgets.forEach((widgets) => {
+      const mapModuleElement = getMapModuleEsriElement(
+        widgets,
+        this.config,
+        this.stores.mapStore
+      );
+      if (mapModuleElement !== null) {
+        this.stores.mapStore.mapView!.ui.add(mapModuleElement);
+      }
+    });
   };
 
   public readonly getGraphicsLayer = (): GraphicsLayer => {

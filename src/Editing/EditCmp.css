@@ -1,0 +1,28 @@
+#editorWidget {
+    max-height:100vh;
+    min-width: 300px !important;
+    width: unset !important;
+}
+
+#editorWidget.hide-feature-form {
+    border:10px solid #f00;
+}
+
+.esri-ui .esri-editor__scroller {
+    max-height:100vh;
+}
+
+.esri-editor-widget {
+    padding: 5px;
+}
+
+.activeTool {
+    background-color: goldenrod !important;
+    color: white !important;
+}
+
+#editComponent {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+}

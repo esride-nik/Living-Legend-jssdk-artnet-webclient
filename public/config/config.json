@@ -6,5 +6,7 @@
   "initialMapZoom": 7,
   "minScale": 5750000.0,
   "maxScale": 1000.0,
-  "basemap": "streets-vector"
+  "basemap": "streets-vector",
+  "widgets": ["edit"],
+  "editTools": [ "ConvexHull" ]
 }

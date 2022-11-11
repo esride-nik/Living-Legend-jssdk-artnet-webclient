@@ -1,3 +1,13 @@
+#editorWrapper {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+}
+
+#editComponent {
+    justify-content: space-evenly;
+}
+
 #editorWidget {
     max-height:100vh;
     min-width: 300px !important;
@@ -19,10 +29,4 @@
 .activeTool {
     background-color: goldenrod !important;
     color: white !important;
-}
-
-#editComponent {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-evenly;
 }

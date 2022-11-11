@@ -66,7 +66,7 @@ export default class MapController {
         this.stores.mapStore.setCenter(center);
       });
       v.map.add(this.graphicsLayer);
-      this.addMapModules();
+      // this.addMapModules();
     });
 
     // reaction(

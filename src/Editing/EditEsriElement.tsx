@@ -23,7 +23,8 @@ const getEditEsriElement = (config: Config, mapStore: MapStore): Expand => {
   ReactDOM.render(
     <StoreProvider config={config}>
       {/* <MainProvider> */}
-      <EditCmp expandedOnInit={true} />
+      {/* <EditCmp expandedOnInit={true} /> */}
+      <EditCmp />
       {/* </MainProvider> */}
     </StoreProvider>,
     wrapperDiv

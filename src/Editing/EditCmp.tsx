@@ -10,9 +10,7 @@ import CustomEditCmp from "./CustomEditCmp";
 import { CustomEditTools } from "./EditStore";
 // import { useMainContext } from '../../core/Main/useMainContext';
 
-interface EditCmpProps {
-  expandedOnInit: boolean;
-}
+interface EditCmpProps {}
 
 const EditCmp: React.FC<EditCmpProps> = observer(() => {
   const editContext = useEditContext();
@@ -35,7 +33,7 @@ const EditCmp: React.FC<EditCmpProps> = observer(() => {
     editStore.unsavedEditsAvailable
   ) {
     return (
-      <>
+      <div id="editorWrapper">
         <div
           ref={editContext.editorWrapperWrapperNode}
           id="editComponent"
@@ -56,7 +54,7 @@ const EditCmp: React.FC<EditCmpProps> = observer(() => {
           id="editorWidget"
           className="esri-editor-widget"
         />
-      </>
+      </div>
     );
   }
   return <div />;

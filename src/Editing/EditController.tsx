@@ -31,7 +31,7 @@ export default class EditController {
   editComponentNode = React.createRef<HTMLDivElement>();
   public editor!: Editor;
   private sketchHandle!: IHandle;
-  private customEditFeature!: __esri.Collection<Graphic>;
+  private customEditFeatures!: __esri.Collection<Graphic>;
   static instance: EditController;
   private stores!: Stores;
 
@@ -151,25 +151,29 @@ export default class EditController {
       console.debug(`${clickedTool} deactivated`);
       await this.finishCustomEditAndGoBackToReshape(
         this.sketchHandle,
-        this.customEditFeature
+        this.customEditFeatures
       );
     } else {
       if (this.stores.editStore.activeCustomEditTool !== "Off") {
         await this.finishCustomEditAndGoBackToReshape(
           this.sketchHandle,
-          this.customEditFeature
+          this.customEditFeatures
         );
         this.stores.editStore.activeCustomEditTool = "Off";
       }
       console.debug(`${clickedTool} activated`);
 
-      // there shouldn't be more than one features on the sketchVM layer, but just in case: the feature to be edited is the one with the attributes.
-      this.customEditFeature =
-        this.editor.viewModel.sketchViewModel.layer.graphics.filter(
-          (graphic: Graphic) =>
-            graphic.attributes !== undefined && graphic.attributes !== null
+      this.customEditFeatures =
+        this.editor.viewModel.sketchViewModel.layer.graphics;
+      // there shouldn't be more than one features on the sketchVM layer
+      const customEditFeature = this.customEditFeatures.getItemAt(0);
+      if (customEditFeature) {
+        this.addFeatureCloneToSketchLayer(customEditFeature);
+      } else {
+        console.warn(
+          `No sketch feature found, which might indicate that the layer doesn't support geometry editing.`
         );
-      this.addFeatureCloneToSketchLayer(this.customEditFeature.getItemAt(0));
+      }
 
       this.editor.viewModel.sketchViewModel.activeFillSymbol =
         this.stores.editStore.sketchSymbol;
@@ -246,11 +250,11 @@ export default class EditController {
             this.stores.editStore.editorFeature.geometry = resultGeometry;
 
             this.removeSketchGraphics();
-            this.customEditFeature.getItemAt(0).geometry = resultGeometry;
+            this.customEditFeatures.getItemAt(0).geometry = resultGeometry;
 
             // activate tool again
             this.addFeatureCloneToSketchLayer(
-              this.customEditFeature.getItemAt(0)
+              this.customEditFeatures.getItemAt(0)
             );
             this.activateDrawUnion();
           }
@@ -275,12 +279,12 @@ export default class EditController {
             this.stores.editStore.editorFeature.geometry = resultGeometry;
 
             this.removeSketchGraphics();
-            this.customEditFeature.getItemAt(0).geometry = resultGeometry;
+            this.customEditFeatures.getItemAt(0).geometry = resultGeometry;
+            const resultGraphic = this.stores.editStore.editorFeature;
+            resultGraphic.geometry = resultGeometry;
 
             // activate tool again
-            this.addFeatureCloneToSketchLayer(
-              this.customEditFeature.getItemAt(0)
-            );
+            this.addFeatureCloneToSketchLayer(resultGraphic);
             this.activateDrawDifference();
           }
         }
@@ -295,7 +299,7 @@ export default class EditController {
         this.stores.editStore.editorFeature.geometry
       ) as Geometry;
       this.stores.editStore.editorFeature.geometry = resultGeometry;
-      this.customEditFeature.getItemAt(0).geometry = resultGeometry;
+      this.customEditFeatures.getItemAt(0).geometry = resultGeometry;
       this.removeSketchGraphics();
     }
   };
@@ -325,7 +329,7 @@ export default class EditController {
       ]) as Geometry;
 
       this.stores.editStore.editorFeature.geometry = resultGeometry;
-      this.customEditFeature.getItemAt(0).geometry = resultGeometry;
+      this.customEditFeatures.getItemAt(0).geometry = resultGeometry;
       this.removeSketchGraphics();
     }
   };

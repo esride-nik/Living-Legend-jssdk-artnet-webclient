@@ -1,14 +1,25 @@
-
 {
-  "webMapItemId": "459a495fc16d4d4caa35e92e895694c8",
-  "wkid": 102100,
-  "initialMapCenter": [586851.55, 5656814.75],
-  "initialMapZoom": 7,
-  "minScale": 5750000.0,
-  "maxScale": 1000.0,
-  "basemap": "streets-vector",
-  "widgets": [{
-    "name": "edit",
-    "editTools": [ "ConvexHull" ]
-  }]
+    "webMapItemId": "3ee0d8a9b1c9458e9fddf012030a3c0c",
+    "wkid": 102100,
+    "initialMapCenter": [
+        586851.55,
+        5656814.75
+    ],
+    "initialMapZoom": 7,
+    "minScale": 5750000,
+    "maxScale": 1000,
+    "basemap": "streets-vector",
+    "widgets": [
+        {
+            "name": "edit",
+            "editTools": [
+                "Union",
+                "Difference",
+                "DrawUnion",
+                "DrawDifference",
+                "ConvexHull",
+                "CloseHoles"
+            ]
+        }
+    ]
 }

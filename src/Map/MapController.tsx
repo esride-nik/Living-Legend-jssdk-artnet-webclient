@@ -86,7 +86,7 @@ export default class MapController {
         this.stores.mapStore
       );
       if (mapModuleElement !== null) {
-        this.stores.mapStore.mapView!.ui.add(mapModuleElement);
+        this.stores.mapStore.mapView!.ui.add(mapModuleElement, "top-left");
       }
     });
   };

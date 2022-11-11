@@ -5,6 +5,7 @@ import EditCmp from "./EditCmp";
 import EditController from "./EditController";
 import { Config } from "Config/types/config";
 import MapStore from "Map/MapStore";
+import createExpandWrapper from "./ExpandWrapper";
 
 const getEditEsriElement = (config: Config, mapStore: MapStore): Expand => {
   const editController = EditController.getInstance();
@@ -18,15 +19,14 @@ const getEditEsriElement = (config: Config, mapStore: MapStore): Expand => {
       editController.editor.cancelWorkflow();
     }
   });
-  //   const wrapperDiv = createExpandWrapper({ expand });
+  const wrapperDiv = createExpandWrapper({ expand });
   ReactDOM.render(
     <StoreProvider config={config}>
       {/* <MainProvider> */}
       <EditCmp expandedOnInit={true} />
       {/* </MainProvider> */}
     </StoreProvider>,
-    document.createElement("div")
-    // wrapperDiv
+    wrapperDiv
   );
   return expand;
 };

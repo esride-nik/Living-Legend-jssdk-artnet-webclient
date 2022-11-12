@@ -7,6 +7,7 @@ class MapStore {
   private readonly appStore: AppStore;
   public mapView?: MapView = undefined;
   public center: Point;
+  public stationary: boolean;
 
   public readonly layerVisibility: {
     [layerId: string]: boolean | undefined;
@@ -21,16 +22,21 @@ class MapStore {
         wkid: this.appStore.config.wkid,
       },
     });
+    this.stationary = true;
 
     makeObservable(this, {
       center: observable,
       mapView: observable,
       layerVisibility: observable,
+      stationary: observable,
       setMapView: action,
       setCenter: action,
     });
   }
 
+  setStationary = (stationary: boolean): void => {
+    this.stationary = stationary;
+  };
   setMapView = (mapView: MapView): void => {
     this.mapView = mapView;
   };

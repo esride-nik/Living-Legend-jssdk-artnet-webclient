@@ -69,6 +69,9 @@ export default class MapController {
       this.mapView.watch("center", (center: Point) => {
         this.stores.mapStore.setCenter(center);
       });
+      this.mapView.watch("stationary", (stationary: boolean) =>
+        this.stores.mapStore.setStationary(stationary)
+      );
       this.mapView.map.add(this.graphicsLayer);
 
       let node = document.getElementById("editWrapper");

@@ -1,3 +1,4 @@
+import ArtnetCmp from "Artnet/ArtnetCmp";
 import "./App.css";
 import MapCmp from "./Map/MapCmp";
 import { MapProvider } from "./Map/MapProvider";
@@ -9,7 +10,8 @@ function App() {
       <MapProvider>
         <MapCmp />
       </MapProvider>
-      <StatusCmp></StatusCmp>
+      <StatusCmp />
+      <ArtnetCmp />
     </div>
   );
 }

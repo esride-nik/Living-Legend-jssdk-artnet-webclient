@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useStores } from "../Stores/useStores";
 import "./Artnet.css";
 import axios from "axios";
+import ArtnetStore from "./ArtnetStore";
 
 interface ArtnetCmpProps {}
 
@@ -23,23 +24,27 @@ async function sendViaAxios(ledVals: number[]) {
   await axios(axiosProps);
 }
 
+function getDummyLedVals(artnetStore: ArtnetStore): number[] {
+  artnetStore.rVal = addRandomValue(artnetStore.rValue, 10);
+  artnetStore.gVal = addRandomValue(artnetStore.gValue, 10);
+  artnetStore.bVal = addRandomValue(artnetStore.bValue, 10);
+
+  const numberOfLeds = 150;
+  const ledVals: number[] = [];
+  for (let i = 0; i < numberOfLeds; i++) {
+    ledVals.push(Math.round(artnetStore.rValue + i / 5));
+    ledVals.push(Math.round(artnetStore.gValue + i / 5));
+    ledVals.push(Math.round(artnetStore.bValue + i / 5));
+  }
+  return ledVals;
+}
+
 const ArtnetCmp: React.FC<ArtnetCmpProps> = observer(
   (props: ArtnetCmpProps) => {
     const { artnetStore, mapStore } = useStores();
 
     useEffect(() => {
-      artnetStore.rVal = addRandomValue(artnetStore.rValue, 10);
-      artnetStore.gVal = addRandomValue(artnetStore.gValue, 10);
-      artnetStore.bVal = addRandomValue(artnetStore.bValue, 10);
-
-      const numberOfLeds = 150;
-      const ledVals: number[] = [];
-      for (let i = 0; i < numberOfLeds; i++) {
-        ledVals.push(Math.round(artnetStore.rValue + i / 5));
-        ledVals.push(Math.round(artnetStore.gValue + i / 5));
-        ledVals.push(Math.round(artnetStore.bValue + i / 5));
-      }
-
+      const ledVals = getDummyLedVals(artnetStore);
       sendViaAxios(ledVals);
     }, [artnetStore, mapStore.stationary]);
 

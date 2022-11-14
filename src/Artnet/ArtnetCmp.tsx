@@ -8,9 +8,13 @@ import ArtnetStore from "./ArtnetStore";
 import MapStore from "Map/MapStore";
 import FeatureLayerView from "@arcgis/core/views/layers/FeatureLayerView";
 import LayerView from "@arcgis/core/views/layers/LayerView";
+import Layer from "@arcgis/core/layers/Layer";
+import FeatureLayer from "@arcgis/core/layers/FeatureLayer";
 // import StatisticDefinition = require("esri/tasks/StatisticDefinition");
 
 interface ArtnetCmpProps {}
+
+const numberOfLeds = 150;
 
 function addRandomValue(org: number, mult: number) {
   const newVal = org + Math.random() * mult;
@@ -49,7 +53,14 @@ async function statisticsLedVals(
   // config: Config
 ): Promise<void> {
   if (mapStore.mapView) {
-    console.log("layers", mapStore.mapView.map.layers);
+    const predominanceLayer = mapStore.mapView.map.allLayers.find(
+      (layer: Layer) => {
+        return layer.title === "Educational Attainment by City";
+      }
+    ) as FeatureLayer;
+    predominanceLayer.outFields = ["*"];
+
+    // console.log("layers", mapStore.mapView.map.layers);
 
     const flvs = mapStore.mapView.layerViews.filter(
       (lv: LayerView) =>
@@ -57,11 +68,11 @@ async function statisticsLedVals(
         "Mexico_demographics_9019_2472_1207_1266_5291_8139_3705_8933_6649_5451"
     );
     const flv = flvs?.getItemAt(0) as FeatureLayerView;
-    console.log(
-      "flv",
-      flv.layer.fields.map((field: any) => field.name)
-    );
-    console.log("renderer", flv.layer.renderer);
+    // console.log(
+    //   "flv",
+    //   flv.layer.fields.map((field: any) => field.name)
+    // );
+    // console.log("renderer", flv.layer.renderer);
 
     const educationFields = [
       "EDUC01_CY",
@@ -93,18 +104,70 @@ async function statisticsLedVals(
     });
 
     // query statistics for features only in view extent
-    const query = flv.createQuery();
+    const query = flv.layer.createQuery();
     query.outStatistics = statDefinitions as __esri.StatisticDefinition[];
+    query.outFields = ["*"];
     query.geometry = mapStore.mapView.extent;
 
     const statsResult = await flv.queryFeatures(query);
-    console.log("statsResult", statsResult.features);
+
+    const stats = statsResult.features[0].attributes;
+
+    console.log("stats", stats);
+
+    const updatedData = [
+      stats.EDUC01_CY_TOTAL, // no school
+      stats.EDUC02_CY_TOTAL, // preschool
+      stats.EDUC03_CY_TOTAL, // some elementary
+      stats.EDUC04_CY_TOTAL + stats.EDUC07_CY_TOTAL, // elementary
+      stats.EDUC05_CY_TOTAL, // some secondary
+      stats.EDUC06_CY_TOTAL + stats.EDUC08_CY_TOTAL, // secondary
+      stats.EDUC09_CY_TOTAL + stats.EDUC11_CY_TOTAL, // high school
+      stats.EDUC10_CY_TOTAL +
+        stats.EDUC12_CY_TOTAL +
+        stats.EDUC13_CY_TOTAL +
+        stats.EDUC14_CY_TOTAL +
+        stats.EDUC15_CY_TOTAL, // college
+      stats.EDUC16_CY_TOTAL, // not specified
+    ];
+
+    // data used to update the pie chart
+    const response = {
+      total: stats.EDUCA_BASE_TOTAL, // total population 12+
+      values: updatedData,
+    };
+
+    console.log("response", response);
+
+    console.log(
+      "response to leds",
+      numberOfLeds,
+      response.total,
+      response.total / numberOfLeds
+    );
+
+    const colors = [
+      "#9e549c",
+      "#f789d8",
+      "#149dcf",
+      "#ed5050",
+      "#ffde3e",
+      "#a6c736",
+      "#b7804a",
+      "#fc9220",
+      "#9e9e9e",
+    ];
+    console.log(
+      "statsResult",
+      statsResult.features[0].attributes,
+      Object.keys(statsResult.features[0].attributes).length,
+      colors.length
+    );
 
     artnetStore.rVal = addRandomValue(artnetStore.rValue, 10);
     artnetStore.gVal = addRandomValue(artnetStore.gValue, 10);
     artnetStore.bVal = addRandomValue(artnetStore.bValue, 10);
 
-    const numberOfLeds = 150;
     const ledVals: number[] = [];
     for (let i = 0; i < numberOfLeds; i++) {
       ledVals.push(Math.round(artnetStore.rValue + i / 5));

@@ -39,17 +39,46 @@ async function sendViaAxios(ledVals: number[]) {
 }
 
 function dummyLedVals(artnetStore: ArtnetStore): void {
-  artnetStore.rVal = addRandomValue(artnetStore.rValue, 10);
-  artnetStore.gVal = addRandomValue(artnetStore.gValue, 10);
-  artnetStore.bVal = addRandomValue(artnetStore.bValue, 10);
-
   const numberOfLeds = 150;
   const ledVals: number[] = [];
+
+  var data = [],
+    a = 1,
+    b = 2;
+
+  // for (var k = 0; k < 100; k++) {
+  //     data.push({x: 0.01 * k, y: a * Math.pow(b, 0.01 * k)});
+  // }
+
   for (let i = 0; i < numberOfLeds; i++) {
-    ledVals.push(Math.round(artnetStore.rValue + i / 5));
-    ledVals.push(Math.round(artnetStore.gValue + i / 5));
-    ledVals.push(Math.round(artnetStore.bValue + i / 5));
+    const factor = a * Math.pow(b, 0.0065 * i) - 1;
+    data.push(factor);
+
+    ledVals.push(i * factor);
+    ledVals.push(0);
+    ledVals.push(0);
   }
+
+  console.log(
+    "expData",
+    JSON.stringify(data),
+    data[75] - data[50],
+    data[125] - data[100]
+  );
+
+  console.log("dummy ledVals", ledVals);
+
+  // artnetStore.rVal = addRandomValue(artnetStore.rValue, 10);
+  // artnetStore.gVal = addRandomValue(artnetStore.gValue, 10);
+  // artnetStore.bVal = addRandomValue(artnetStore.bValue, 10);
+
+  // const numberOfLeds = 150;
+  // const ledVals: number[] = [];
+  // for (let i = 0; i < numberOfLeds; i++) {
+  //   ledVals.push(Math.round(artnetStore.rValue + i / 5));
+  //   ledVals.push(Math.round(artnetStore.gValue + i / 5));
+  //   ledVals.push(Math.round(artnetStore.bValue + i / 5));
+  // }
   sendViaAxios(ledVals);
 }
 
@@ -209,10 +238,9 @@ async function statisticsLedVals(
 const ArtnetCmp: React.FC<ArtnetCmpProps> = observer(
   (props: ArtnetCmpProps) => {
     const { artnetStore, mapStore } = useStores();
-
     useEffect(() => {
-      // dummyLedVals(artnetStore);
-      statisticsLedVals(artnetStore, mapStore);
+      dummyLedVals(artnetStore);
+      // statisticsLedVals(artnetStore, mapStore);
     }, [artnetStore, mapStore.stationary]);
 
     // const response = fetch("http://127.0.0.1:9000", {

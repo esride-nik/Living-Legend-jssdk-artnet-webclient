@@ -20,7 +20,7 @@ type LedNumsAndColors = {
 
 interface ArtnetCmpProps {}
 
-const numberOfLeds = 150;
+const totalNumberOfLeds = 150;
 
 function addRandomValue(org: number, mult: number) {
   const newVal = org + Math.random() * mult;
@@ -51,7 +51,7 @@ function distLedVals(artnetStore: ArtnetStore): void {
     data.push(factor);
 
     ledVals.push(i * factor);
-    ledVals.push(0);
+    ledVals.push(i * factor);
     ledVals.push(0);
   }
 
@@ -62,7 +62,7 @@ function distLedVals(artnetStore: ArtnetStore): void {
     data[125] - data[100]
   );
 
-  console.log("dummy ledVals", ledVals);
+  console.log("dist ledVals", ledVals);
   sendViaAxios(ledVals);
 }
 
@@ -149,60 +149,71 @@ async function statisticsLedVals(
 
     // console.log("stats", stats);
 
+    // const updatedData = [
+    //   stats.EDUC01_CY_TOTAL, // no school
+    //   stats.EDUC02_CY_TOTAL, // preschool
+    //   stats.EDUC03_CY_TOTAL, // some elementary
+    //   stats.EDUC04_CY_TOTAL + stats.EDUC07_CY_TOTAL, // elementary
+    //   stats.EDUC05_CY_TOTAL, // some secondary
+    //   stats.EDUC06_CY_TOTAL + stats.EDUC08_CY_TOTAL, // secondary
+    //   stats.EDUC09_CY_TOTAL + stats.EDUC11_CY_TOTAL, // high school
+    //   stats.EDUC10_CY_TOTAL +
+    //     stats.EDUC12_CY_TOTAL +
+    //     stats.EDUC13_CY_TOTAL +
+    //     stats.EDUC14_CY_TOTAL +
+    //     stats.EDUC15_CY_TOTAL, // college
+    //   stats.EDUC16_CY_TOTAL, // not specified
+    // ].sort((a, b) => b - a);
     const updatedData = [
       stats.EDUC01_CY_TOTAL, // no school
       stats.EDUC02_CY_TOTAL, // preschool
-      stats.EDUC03_CY_TOTAL, // some elementary
-      stats.EDUC04_CY_TOTAL + stats.EDUC07_CY_TOTAL, // elementary
-      stats.EDUC05_CY_TOTAL, // some secondary
-      stats.EDUC06_CY_TOTAL + stats.EDUC08_CY_TOTAL, // secondary
       stats.EDUC09_CY_TOTAL + stats.EDUC11_CY_TOTAL, // high school
       stats.EDUC10_CY_TOTAL +
         stats.EDUC12_CY_TOTAL +
         stats.EDUC13_CY_TOTAL +
         stats.EDUC14_CY_TOTAL +
         stats.EDUC15_CY_TOTAL, // college
-      stats.EDUC16_CY_TOTAL, // not specified
     ].sort((a, b) => b - a);
 
-    let totalUpdatedData = 0;
-    updatedData.forEach((v: number) => (totalUpdatedData += v));
+    const updatedDataPlus = updatedData.map((v: number) => v + +10000);
 
-    const updatedDataPercentage = updatedData.map(
+    let totalUpdatedData = 0;
+    updatedDataPlus.forEach((v: number) => (totalUpdatedData += v));
+
+    const updatedDataPercentage = updatedDataPlus.map(
       (v: number) => (v / totalUpdatedData) * 100
     );
+    let checkTotalData = 0;
+    updatedDataPercentage.forEach((v: number) => (checkTotalData += v));
 
-    const percentageLeds = updatedDataPercentage.map((v: number) =>
-      Math.round(numberOfLeds * (v / 100))
+    const numLedsPerClass = updatedDataPercentage.map((v: number) =>
+      Math.round(totalNumberOfLeds * (v / 100))
     );
     let checkTotalLeds = 0;
-    percentageLeds.forEach((v: number) => (checkTotalLeds += v));
+    numLedsPerClass.forEach((v: number) => (checkTotalLeds += v));
 
     console.log(
       "percentage",
+      updatedData,
       updatedDataPercentage,
-      percentageLeds,
+      checkTotalData,
+      numLedsPerClass,
       checkTotalLeds
     );
 
-    // data used to update the pie chart
-    const response = {
-      total: totalUpdatedData,
-      values: updatedData,
-    };
-
-    const colors = [
-      "#9e549c",
-      "#f789d8",
-      "#149dcf",
-      "#ed5050",
-      "#ffde3e",
-      "#a6c736",
-      "#b7804a",
-      "#fc9220",
-      "#9e9e9e",
-    ];
-    const ledNumsAndColors = percentageLeds.map(
+    const colors = ["#f00", "#f90", "#0f0", "#00f"];
+    // const colors = [
+    //   "#9e549c",
+    //   "#f789d8",
+    //   "#149dcf",
+    //   "#ed5050",
+    //   "#ffde3e",
+    //   "#a6c736",
+    //   "#b7804a",
+    //   "#fc9220",
+    //   "#9e9e9e",
+    // ];
+    const ledNumsAndColors = numLedsPerClass.map(
       (numLeds: number, i: number) => {
         return {
           numLeds: numLeds,
@@ -210,23 +221,41 @@ async function statisticsLedVals(
         } as LedNumsAndColors;
       }
     );
-    console.log(
-      "statsResult",
-      statsResult.features[0].attributes,
-      Object.keys(statsResult.features[0].attributes).length,
-      colors.length
-    );
+    // console.log(
+    //   "statsResult",
+    //   statsResult.features[0].attributes,
+    //   Object.keys(statsResult.features[0].attributes).length,
+    //   colors.length
+    // );
+
+    //   var data = [],
+    //   a = 1,
+    //   b = 2;
+
+    // for (let i = 0; i < numberOfLeds; i++) {
+    //   const factor = a * Math.pow(b, 0.0065 * i) - 1;
+    //   data.push(factor);
+
+    //   ledVals.push(i * factor);
+    //   ledVals.push(i * factor);
+    //   ledVals.push(0);
+    // }
 
     const ledVals: number[] = [];
     ledNumsAndColors.forEach((lc: LedNumsAndColors) => {
       for (let i = 0; i < lc.numLeds; i++) {
-        ledVals.push(Math.round(lc.color.r / 3));
-        ledVals.push(Math.round(lc.color.g / 3));
-        ledVals.push(Math.round(lc.color.b / 3));
+        ledVals.push(Math.round(factorizeColor(lc.color.r) * 0.2));
+        // ledVals.push(0);
+        ledVals.push(Math.round(factorizeColor(lc.color.g)));
+        ledVals.push(Math.round(factorizeColor(lc.color.b) * 0.5));
+        // ledVals.push(Math.round(lc.color.r));
+        // ledVals.push(Math.round(lc.color.g));
+        // ledVals.push(Math.round(lc.color.b));
       }
+      // console.log("lc", lc.color, lc.numLeds, ledVals[ledVals.length - 1]);
     });
 
-    console.log("ledVals", ledVals);
+    // console.log("ledVals", ledVals);
 
     sendViaAxios(ledVals);
   } else {
@@ -234,13 +263,20 @@ async function statisticsLedVals(
   }
 }
 
+function factorizeColor(c: number): number {
+  const newC = (c / 255) * 150;
+  const a = 1;
+  const b = 2;
+  return (a * Math.pow(b, 0.0065 * newC) - 1) * c;
+}
+
 const ArtnetCmp: React.FC<ArtnetCmpProps> = observer(
   (props: ArtnetCmpProps) => {
     const { artnetStore, mapStore } = useStores();
     useEffect(() => {
-      distLedVals(artnetStore);
+      // distLedVals(artnetStore);
       // dummyLedVals(artnetStore);
-      // statisticsLedVals(artnetStore, mapStore);
+      statisticsLedVals(artnetStore, mapStore);
     }, [artnetStore, mapStore.stationary]);
 
     // const response = fetch("http://127.0.0.1:9000", {

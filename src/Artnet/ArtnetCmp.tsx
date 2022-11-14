@@ -166,7 +166,10 @@ async function statisticsLedVals(
     // ].sort((a, b) => b - a);
     const updatedData = [
       stats.EDUC01_CY_TOTAL, // no school
-      stats.EDUC02_CY_TOTAL, // preschool
+      // stats.EDUC02_CY_TOTAL, // preschool
+      stats.EDUC03_CY_TOTAL, // some elementary
+      // stats.EDUC04_CY_TOTAL + stats.EDUC07_CY_TOTAL, // elementary
+      // stats.EDUC06_CY_TOTAL + stats.EDUC08_CY_TOTAL, // secondary
       stats.EDUC09_CY_TOTAL + stats.EDUC11_CY_TOTAL, // high school
       stats.EDUC10_CY_TOTAL +
         stats.EDUC12_CY_TOTAL +
@@ -201,8 +204,8 @@ async function statisticsLedVals(
       checkTotalLeds
     );
 
-    // const colors = ["#b10", "#f90", "#0f0", "#00f"];
-    const colors = ["#FF1B1C", "#FF7F11", "#BEB7A4", "#CBE896"];
+    const colors = ["#AB384D", "#FF1B1C", "#FF7F11", "#BEB7A4"]; //, "#CBE896"];
+    // const colors = ["#6B2737", "#FF1B1C", "#FF7F11", "#BEB7A4", "#CBE896"];
     // const colors = [
     //   "#9e549c",
     //   "#f789d8",

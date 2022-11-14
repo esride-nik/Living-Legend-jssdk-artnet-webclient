@@ -10,7 +10,7 @@ function App() {
       <MapProvider>
         <MapCmp />
       </MapProvider>
-      <StatusCmp />
+      {/* <StatusCmp /> */}
       <ArtnetCmp />
     </div>
   );

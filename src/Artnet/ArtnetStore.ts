@@ -1,11 +1,13 @@
 import { action, makeObservable, observable } from "mobx";
 import AppStore from "../Stores/AppStore";
+import { LedNumsAndColors } from "./ArtnetCmp";
 
 class ArtnetStore {
   private readonly appStore: AppStore;
   rValue: number = 0;
   gValue: number = 100;
   bValue: number = 200;
+  ledNumsAndColors: LedNumsAndColors[] = [];
 
   constructor(appStore: AppStore) {
     this.appStore = appStore;
@@ -13,6 +15,7 @@ class ArtnetStore {
       rValue: observable,
       gValue: observable,
       bValue: observable,
+      ledNumsAndColors: observable,
     });
   }
 

@@ -13,7 +13,7 @@ import FeatureLayer from "@arcgis/core/layers/FeatureLayer";
 import Color from "@arcgis/core/Color";
 // import StatisticDefinition = require("esri/tasks/StatisticDefinition");
 
-type LedNumsAndColors = {
+export type LedNumsAndColors = {
   numLeds: number;
   color: Color;
 };
@@ -225,6 +225,7 @@ async function statisticsLedVals(
         } as LedNumsAndColors;
       }
     );
+    artnetStore.ledNumsAndColors = ledNumsAndColors;
 
     const ledVals: number[] = [];
     const ledValsRows: number[][] = [];
@@ -325,7 +326,9 @@ const ArtnetCmp: React.FC<ArtnetCmpProps> = observer(
     return (
       <div id="artnet">
         <p>
-          {artnetStore.rValue} | {artnetStore.gValue} | {artnetStore.bValue}
+          {artnetStore.ledNumsAndColors.map(
+            (n: LedNumsAndColors) => `${n.color}: ${n.numLeds}\n`
+          )}
         </p>
         <p>{mapStore.stationary ? "stationary" : "moving"}</p>
       </div>

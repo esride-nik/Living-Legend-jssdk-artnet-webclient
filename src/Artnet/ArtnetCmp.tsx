@@ -201,7 +201,8 @@ async function statisticsLedVals(
       checkTotalLeds
     );
 
-    const colors = ["#f00", "#f90", "#0f0", "#00f"];
+    // const colors = ["#b10", "#f90", "#0f0", "#00f"];
+    const colors = ["#FF1B1C", "#FF7F11", "#BEB7A4", "#CBE896"];
     // const colors = [
     //   "#9e549c",
     //   "#f789d8",

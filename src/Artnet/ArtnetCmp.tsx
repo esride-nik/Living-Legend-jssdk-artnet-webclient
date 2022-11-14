@@ -224,18 +224,73 @@ async function statisticsLedVals(
     );
 
     const ledVals: number[] = [];
+    const ledValsRows: number[][] = [];
+    ledValsRows.push([]);
+    ledValsRows.push([]);
+    ledValsRows.push([]);
+    ledValsRows.push([]);
+    ledValsRows.push([]);
+    ledValsRows.push([]);
+
     ledNumsAndColors.forEach((lc: LedNumsAndColors) => {
-      for (let i = 0; i < lc.numLeds; i++) {
-        ledVals.push(Math.round(factorizeColor(lc.color.r) * 0.2));
-        ledVals.push(Math.round(factorizeColor(lc.color.g)));
-        ledVals.push(Math.round(factorizeColor(lc.color.b) * 0.5));
+      console.log("lc", lc, ledValsRows.length);
+      const numRows = 6;
+      const numLedsPerRow = Math.round(lc.numLeds / numRows);
+      console.log("numLedsPerRow", numLedsPerRow, numRows);
+      for (let n = 0; n < numRows; n++) {
+        let row: number[] = [];
+        for (let i = 0; i < numLedsPerRow; i++) {
+          row.push(Math.round(factorizeColor(lc.color.r) * 0.2));
+          row.push(Math.round(factorizeColor(lc.color.g)));
+          row.push(Math.round(factorizeColor(lc.color.b) * 0.5));
+        }
+        ledValsRows[n].push(...row);
       }
     });
+    const ledValsRowClipped = ledValsRows.map((r: number[], i: number) => {
+      let slicedRow = r.slice(0, 75);
+      if (i % 2 > 0) {
+        console.log("mod", i % 2);
+        console.log("slicedRow before", slicedRow);
+        slicedRow = reverseRgbRow(slicedRow);
+        console.log("slicedRow after", slicedRow);
+      }
+      console.log(r.length, r, slicedRow.length);
+      return slicedRow;
+    });
+    ledVals.push(...ledValsRowClipped.flat());
+    console.log("ledVals", ledVals);
 
     sendViaAxios(ledVals);
   } else {
     console.error(`No map view.`);
   }
+}
+
+function reverseRgbRow(row: number[]) {
+  const reversedRow: number[] = [];
+  let b = row.pop();
+  let g = row.pop();
+  let r = row.pop();
+  while (r !== undefined && g !== undefined && b !== undefined) {
+    reversedRow.push(r);
+    reversedRow.push(g);
+    reversedRow.push(b);
+    b = row.pop();
+    g = row.pop();
+    r = row.pop();
+    console.log(
+      r,
+      g,
+      b,
+      " ###",
+      row.length,
+      reversedRow.length,
+      row,
+      reversedRow
+    );
+  }
+  return reversedRow;
 }
 
 function factorizeColor(c: number): number {

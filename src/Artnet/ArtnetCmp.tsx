@@ -10,7 +10,13 @@ import FeatureLayerView from "@arcgis/core/views/layers/FeatureLayerView";
 import LayerView from "@arcgis/core/views/layers/LayerView";
 import Layer from "@arcgis/core/layers/Layer";
 import FeatureLayer from "@arcgis/core/layers/FeatureLayer";
+import Color from "@arcgis/core/Color";
 // import StatisticDefinition = require("esri/tasks/StatisticDefinition");
+
+type LedNumsAndColors = {
+  numLeds: number;
+  color: Color;
+};
 
 interface ArtnetCmpProps {}
 
@@ -113,7 +119,7 @@ async function statisticsLedVals(
 
     const stats = statsResult.features[0].attributes;
 
-    console.log("stats", stats);
+    // console.log("stats", stats);
 
     const updatedData = [
       stats.EDUC01_CY_TOTAL, // no school
@@ -129,22 +135,33 @@ async function statisticsLedVals(
         stats.EDUC14_CY_TOTAL +
         stats.EDUC15_CY_TOTAL, // college
       stats.EDUC16_CY_TOTAL, // not specified
-    ];
+    ].sort((a, b) => b - a);
+
+    let totalUpdatedData = 0;
+    updatedData.forEach((v: number) => (totalUpdatedData += v));
+
+    const updatedDataPercentage = updatedData.map(
+      (v: number) => (v / totalUpdatedData) * 100
+    );
+
+    const percentageLeds = updatedDataPercentage.map((v: number) =>
+      Math.round(numberOfLeds * (v / 100))
+    );
+    let checkTotalLeds = 0;
+    percentageLeds.forEach((v: number) => (checkTotalLeds += v));
+
+    console.log(
+      "percentage",
+      updatedDataPercentage,
+      percentageLeds,
+      checkTotalLeds
+    );
 
     // data used to update the pie chart
     const response = {
-      total: stats.EDUCA_BASE_TOTAL, // total population 12+
+      total: totalUpdatedData,
       values: updatedData,
     };
-
-    console.log("response", response);
-
-    console.log(
-      "response to leds",
-      numberOfLeds,
-      response.total,
-      response.total / numberOfLeds
-    );
 
     const colors = [
       "#9e549c",
@@ -157,6 +174,14 @@ async function statisticsLedVals(
       "#fc9220",
       "#9e9e9e",
     ];
+    const ledNumsAndColors = percentageLeds.map(
+      (numLeds: number, i: number) => {
+        return {
+          numLeds: numLeds,
+          color: new Color(colors[i]),
+        } as LedNumsAndColors;
+      }
+    );
     console.log(
       "statsResult",
       statsResult.features[0].attributes,
@@ -164,16 +189,17 @@ async function statisticsLedVals(
       colors.length
     );
 
-    artnetStore.rVal = addRandomValue(artnetStore.rValue, 10);
-    artnetStore.gVal = addRandomValue(artnetStore.gValue, 10);
-    artnetStore.bVal = addRandomValue(artnetStore.bValue, 10);
-
     const ledVals: number[] = [];
-    for (let i = 0; i < numberOfLeds; i++) {
-      ledVals.push(Math.round(artnetStore.rValue + i / 5));
-      ledVals.push(Math.round(artnetStore.gValue + i / 5));
-      ledVals.push(Math.round(artnetStore.bValue + i / 5));
-    }
+    ledNumsAndColors.forEach((lc: LedNumsAndColors) => {
+      for (let i = 0; i < lc.numLeds; i++) {
+        ledVals.push(Math.round(lc.color.r / 3));
+        ledVals.push(Math.round(lc.color.g / 3));
+        ledVals.push(Math.round(lc.color.b / 3));
+      }
+    });
+
+    console.log("ledVals", ledVals);
+
     sendViaAxios(ledVals);
   } else {
     console.error(`No map view.`);

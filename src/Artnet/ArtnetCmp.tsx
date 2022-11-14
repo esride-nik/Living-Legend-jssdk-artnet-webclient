@@ -222,41 +222,15 @@ async function statisticsLedVals(
         } as LedNumsAndColors;
       }
     );
-    // console.log(
-    //   "statsResult",
-    //   statsResult.features[0].attributes,
-    //   Object.keys(statsResult.features[0].attributes).length,
-    //   colors.length
-    // );
-
-    //   var data = [],
-    //   a = 1,
-    //   b = 2;
-
-    // for (let i = 0; i < numberOfLeds; i++) {
-    //   const factor = a * Math.pow(b, 0.0065 * i) - 1;
-    //   data.push(factor);
-
-    //   ledVals.push(i * factor);
-    //   ledVals.push(i * factor);
-    //   ledVals.push(0);
-    // }
 
     const ledVals: number[] = [];
     ledNumsAndColors.forEach((lc: LedNumsAndColors) => {
       for (let i = 0; i < lc.numLeds; i++) {
         ledVals.push(Math.round(factorizeColor(lc.color.r) * 0.2));
-        // ledVals.push(0);
         ledVals.push(Math.round(factorizeColor(lc.color.g)));
         ledVals.push(Math.round(factorizeColor(lc.color.b) * 0.5));
-        // ledVals.push(Math.round(lc.color.r));
-        // ledVals.push(Math.round(lc.color.g));
-        // ledVals.push(Math.round(lc.color.b));
       }
-      // console.log("lc", lc.color, lc.numLeds, ledVals[ledVals.length - 1]);
     });
-
-    // console.log("ledVals", ledVals);
 
     sendViaAxios(ledVals);
   } else {

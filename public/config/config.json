@@ -1,5 +1,5 @@
 {
-    "webMapItemId": "3ee0d8a9b1c9458e9fddf012030a3c0c",
+    "webMapItemId": "88275f408861408dab986ad78f2a97cf",
     "wkid": 102100,
     "initialMapCenter": [
         586851.55,
@@ -10,15 +10,5 @@
     "maxScale": 1000,
     "basemap": "streets-vector",
     "widgets": [
-        {
-            "name": "edit",
-            "editTools": [
-                "Copy",
-                "DrawUnion",
-                "DrawDifference",
-                "ConvexHull",
-                "CloseHoles"
-            ]
-        }
     ]
 }

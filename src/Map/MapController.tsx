@@ -74,18 +74,18 @@ export default class MapController {
       );
       this.mapView.map.add(this.graphicsLayer);
 
-      let node = document.getElementById("editWrapper");
-      if (!node) {
-        node = document.createElement("div");
-        node.setAttribute("id", "editWrapper");
-        this.mapView.ui.add(node, "top-left");
-        ReactDOM.render(
-          <StoreProvider config={this.config}>
-            <EditCmp />
-          </StoreProvider>,
-          node
-        );
-      }
+      // let node = document.getElementById("editWrapper");
+      // if (!node) {
+      //   node = document.createElement("div");
+      //   node.setAttribute("id", "editWrapper");
+      //   this.mapView.ui.add(node, "top-left");
+      //   ReactDOM.render(
+      //     <StoreProvider config={this.config}>
+      //       <EditCmp />
+      //     </StoreProvider>,
+      //     node
+      //   );
+      // }
     });
 
     // reaction(

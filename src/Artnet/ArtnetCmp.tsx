@@ -233,7 +233,7 @@ async function statisticsLedVals(
     ledValsRows.push([]);
 
     ledNumsAndColors.forEach((lc: LedNumsAndColors) => {
-      console.log("lc", lc, ledValsRows.length);
+      console.log("lc", lc);
       const numRows = 6;
       const numLedsPerRow = Math.round(lc.numLeds / numRows);
       console.log("numLedsPerRow", numLedsPerRow, numRows);
@@ -250,16 +250,18 @@ async function statisticsLedVals(
     const ledValsRowClipped = ledValsRows.map((r: number[], i: number) => {
       let slicedRow = r.slice(0, 75);
       if (i % 2 > 0) {
-        console.log("mod", i % 2);
-        console.log("slicedRow before", slicedRow);
         slicedRow = reverseRgbRow(slicedRow);
-        console.log("slicedRow after", slicedRow);
       }
-      console.log(r.length, r, slicedRow.length);
+      while (slicedRow.length < 75) {
+        const r = slicedRow[slicedRow.length - 3];
+        const g = slicedRow[slicedRow.length - 2];
+        const b = slicedRow[slicedRow.length - 1];
+        slicedRow.push(r, g, b);
+      }
+      // console.log(slicedRow.length, slicedRow);
       return slicedRow;
     });
     ledVals.push(...ledValsRowClipped.flat());
-    console.log("ledVals", ledVals);
 
     sendViaAxios(ledVals);
   } else {
@@ -279,16 +281,6 @@ function reverseRgbRow(row: number[]) {
     b = row.pop();
     g = row.pop();
     r = row.pop();
-    console.log(
-      r,
-      g,
-      b,
-      " ###",
-      row.length,
-      reversedRow.length,
-      row,
-      reversedRow
-    );
   }
   return reversedRow;
 }

@@ -87,14 +87,14 @@ async function statisticsLedVals(
   // config: Config
 ): Promise<void> {
   if (mapStore.mapView) {
-    const predominanceLayer = mapStore.mapView.map.allLayers.find(
-      (layer: Layer) => {
-        return layer.title === "Educational Attainment by City";
-      }
-    ) as FeatureLayer;
-    predominanceLayer.outFields = ["*"];
+    // const predominanceLayer = mapStore.mapView.map.allLayers.find(
+    //   (layer: Layer) => {
+    //     return layer.title === "Educational Attainment by City";
+    //   }
+    // ) as FeatureLayer;
+    // predominanceLayer.outFields = ["*"];
 
-    // console.log("layers", mapStore.mapView.map.layers);
+    console.log("layerViews", mapStore.mapView.layerViews);
 
     const flvs = mapStore.mapView.layerViews.filter(
       (lv: LayerView) =>
@@ -102,11 +102,6 @@ async function statisticsLedVals(
         "Mexico_demographics_9019_2472_1207_1266_5291_8139_3705_8933_6649_5451"
     );
     const flv = flvs?.getItemAt(0) as FeatureLayerView;
-    // console.log(
-    //   "flv",
-    //   flv.layer.fields.map((field: any) => field.name)
-    // );
-    // console.log("renderer", flv.layer.renderer);
 
     const educationFields = [
       "EDUC01_CY",
@@ -204,19 +199,17 @@ async function statisticsLedVals(
       checkTotalLeds
     );
 
-    const colors = ["#AB384D", "#FF1B1C", "#FF7F11", "#BEB7A4", "#CBE896"];
-    // const colors = ["#f00", "#0f0", "#00f", "#ff0", "#CBE896"];
-    // const colors = [
-    //   "#9e549c",
-    //   "#f789d8",
-    //   "#149dcf",
-    //   "#ed5050",
-    //   "#ffde3e",
-    //   "#a6c736",
-    //   "#b7804a",
-    //   "#fc9220",
-    //   "#9e9e9e",
-    // ];
+    console.log("layer", flv.layer.renderer);
+
+    const colors: __esri.Color[] = [];
+    if (flv.layer.renderer.type === "unique-value") {
+      colors.push(
+        ...(
+          flv.layer.renderer as __esri.UniqueValueRenderer
+        ).uniqueValueInfos.map((ui: __esri.UniqueValueInfo) => ui.symbol.color)
+      );
+    }
+
     const ledNumsAndColors = numLedsPerClass.map(
       (numLeds: number, i: number) => {
         return {

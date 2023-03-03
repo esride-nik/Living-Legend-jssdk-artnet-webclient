@@ -24,6 +24,7 @@ export default class MapController {
 
   private readonly graphicsLayer: GraphicsLayer = new GraphicsLayer({
     listMode: "hide",
+    id: "graphicsLayer",
   });
 
   public map!: Map;

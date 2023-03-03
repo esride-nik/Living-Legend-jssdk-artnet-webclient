@@ -86,184 +86,133 @@ async function statisticsLedVals(
   mapStore: MapStore
   // config: Config
 ): Promise<void> {
-  if (mapStore.mapView) {
-    // const predominanceLayer = mapStore.mapView.map.allLayers.find(
-    //   (layer: Layer) => {
-    //     return layer.title === "Educational Attainment by City";
-    //   }
-    // ) as FeatureLayer;
-    // predominanceLayer.outFields = ["*"];
-
-    console.log("layerViews", mapStore.mapView.layerViews);
-
-    const flvs = mapStore.mapView.layerViews.filter(
-      (lv: LayerView) =>
-        lv.layer.id ===
-        "Mexico_demographics_9019_2472_1207_1266_5291_8139_3705_8933_6649_5451"
-    );
-    const flv = flvs?.getItemAt(0) as FeatureLayerView;
-
-    const educationFields = [
-      "EDUC01_CY",
-      "EDUC02_CY",
-      "EDUC03_CY",
-      "EDUC04_CY",
-      "EDUC05_CY",
-      "EDUC06_CY",
-      "EDUC07_CY",
-      "EDUC08_CY",
-      "EDUC09_CY",
-      "EDUC10_CY",
-      "EDUC11_CY",
-      "EDUC12_CY",
-      "EDUC13_CY",
-      "EDUC14_CY",
-      "EDUC15_CY",
-      "EDUC16_CY",
-      "EDUCA_BASE",
-    ];
-
-    // Creates a query object for statistics of each of the fields listed above
-    const statDefinitions = educationFields.map(function (fieldName) {
-      return {
-        onStatisticField: fieldName,
-        outStatisticFieldName: fieldName + "_TOTAL",
-        statisticType: "sum",
-      };
-    });
-
-    // query statistics for features only in view extent
-    const query = flv.layer.createQuery();
-    query.outStatistics = statDefinitions as __esri.StatisticDefinition[];
-    query.outFields = ["*"];
-    query.geometry = mapStore.mapView.extent;
-
-    const statsResult = await flv.queryFeatures(query);
-
-    const stats = statsResult.features[0].attributes;
-
-    // console.log("stats", stats);
-
-    // const updatedData = [
-    //   stats.EDUC01_CY_TOTAL, // no school
-    //   stats.EDUC02_CY_TOTAL, // preschool
-    //   stats.EDUC03_CY_TOTAL, // some elementary
-    //   stats.EDUC04_CY_TOTAL + stats.EDUC07_CY_TOTAL, // elementary
-    //   stats.EDUC05_CY_TOTAL, // some secondary
-    //   stats.EDUC06_CY_TOTAL + stats.EDUC08_CY_TOTAL, // secondary
-    //   stats.EDUC09_CY_TOTAL + stats.EDUC11_CY_TOTAL, // high school
-    //   stats.EDUC10_CY_TOTAL +
-    //     stats.EDUC12_CY_TOTAL +
-    //     stats.EDUC13_CY_TOTAL +
-    //     stats.EDUC14_CY_TOTAL +
-    //     stats.EDUC15_CY_TOTAL, // college
-    //   stats.EDUC16_CY_TOTAL, // not specified
-    // ].sort((a, b) => b - a);
-    const updatedData = [
-      stats.EDUC01_CY_TOTAL, // no school
-      // stats.EDUC02_CY_TOTAL, // preschool
-      stats.EDUC03_CY_TOTAL, // some elementary
-      // stats.EDUC04_CY_TOTAL + stats.EDUC07_CY_TOTAL, // elementary
-      stats.EDUC06_CY_TOTAL + stats.EDUC08_CY_TOTAL, // secondary
-      stats.EDUC09_CY_TOTAL + stats.EDUC11_CY_TOTAL, // high school
-      stats.EDUC10_CY_TOTAL +
-        stats.EDUC12_CY_TOTAL +
-        stats.EDUC13_CY_TOTAL +
-        stats.EDUC14_CY_TOTAL +
-        stats.EDUC15_CY_TOTAL, // college
-    ].sort((a, b) => b - a);
-
-    const updatedDataPlus = updatedData.map((v: number) => v + +10000);
-
-    let totalUpdatedData = 0;
-    updatedDataPlus.forEach((v: number) => (totalUpdatedData += v));
-
-    const updatedDataPercentage = updatedDataPlus.map(
-      (v: number) => (v / totalUpdatedData) * 100
-    );
-    let checkTotalData = 0;
-    updatedDataPercentage.forEach((v: number) => (checkTotalData += v));
-
-    const numLedsPerClass = updatedDataPercentage.map((v: number) =>
-      Math.round(totalNumberOfLeds * (v / 100))
-    );
-    let checkTotalLeds = 0;
-    numLedsPerClass.forEach((v: number) => (checkTotalLeds += v));
-
-    console.log(
-      "percentage",
-      updatedData,
-      updatedDataPercentage,
-      checkTotalData,
-      numLedsPerClass,
-      checkTotalLeds
-    );
-
-    console.log("layer", flv.layer.renderer);
-
-    const colors: __esri.Color[] = [];
-    if (flv.layer.renderer.type === "unique-value") {
-      colors.push(
-        ...(
-          flv.layer.renderer as __esri.UniqueValueRenderer
-        ).uniqueValueInfos.map((ui: __esri.UniqueValueInfo) => ui.symbol.color)
-      );
-    }
-
-    const ledNumsAndColors = numLedsPerClass.map(
-      (numLeds: number, i: number) => {
-        return {
-          numLeds: numLeds,
-          color: new Color(colors[i]),
-        } as LedNumsAndColors;
-      }
-    );
-    artnetStore.ledNumsAndColors = ledNumsAndColors;
-
-    const ledVals: number[] = [];
-    const ledValsRows: number[][] = [];
-    ledValsRows.push([]);
-    ledValsRows.push([]);
-    ledValsRows.push([]);
-    ledValsRows.push([]);
-    ledValsRows.push([]);
-    ledValsRows.push([]);
-
-    ledNumsAndColors.forEach((lc: LedNumsAndColors) => {
-      console.log("lc", lc);
-      const numRows = 6;
-      const numLedsPerRow = Math.round(lc.numLeds / numRows);
-      console.log("numLedsPerRow", numLedsPerRow, numRows);
-      for (let n = 0; n < numRows; n++) {
-        let row: number[] = [];
-        for (let i = 0; i < numLedsPerRow; i++) {
-          row.push(Math.round(factorizeColor(lc.color.r) * 0.2));
-          row.push(Math.round(factorizeColor(lc.color.g)));
-          row.push(Math.round(factorizeColor(lc.color.b) * 0.5));
-        }
-        ledValsRows[n].push(...row);
-      }
-    });
-    const ledValsRowClipped = ledValsRows.map((r: number[], i: number) => {
-      let slicedRow = r.slice(0, 75);
-      if (i % 2 > 0) {
-        slicedRow = reverseRgbRow(slicedRow);
-      }
-      while (slicedRow.length < 75) {
-        const r = slicedRow[slicedRow.length - 3];
-        const g = slicedRow[slicedRow.length - 2];
-        const b = slicedRow[slicedRow.length - 1];
-        slicedRow.push(r, g, b);
-      }
-      // console.log(slicedRow.length, slicedRow);
-      return slicedRow;
-    });
-    ledVals.push(...ledValsRowClipped.flat());
-
-    sendViaAxios(ledVals);
-  } else {
-    console.error(`No map view.`);
+  if (!mapStore.mapView) {
+    console.warn(`No map view.`);
+    return;
+  } else if (!artnetStore.flv) {
+    console.warn(`No feature layer view.`);
+    return;
   }
+  const statsResult = await artnetStore.flv.queryFeatures(
+    artnetStore.statsQuery
+  );
+  const stats = statsResult.features[0].attributes;
+  // console.log("stats", stats);
+
+  // const updatedData = [
+  //   stats.EDUC01_CY_TOTAL, // no school
+  //   stats.EDUC02_CY_TOTAL, // preschool
+  //   stats.EDUC03_CY_TOTAL, // some elementary
+  //   stats.EDUC04_CY_TOTAL + stats.EDUC07_CY_TOTAL, // elementary
+  //   stats.EDUC05_CY_TOTAL, // some secondary
+  //   stats.EDUC06_CY_TOTAL + stats.EDUC08_CY_TOTAL, // secondary
+  //   stats.EDUC09_CY_TOTAL + stats.EDUC11_CY_TOTAL, // high school
+  //   stats.EDUC10_CY_TOTAL +
+  //     stats.EDUC12_CY_TOTAL +
+  //     stats.EDUC13_CY_TOTAL +
+  //     stats.EDUC14_CY_TOTAL +
+  //     stats.EDUC15_CY_TOTAL, // college
+  //   stats.EDUC16_CY_TOTAL, // not specified
+  // ].sort((a, b) => b - a);
+  const updatedData = [
+    stats.EDUC01_CY_TOTAL, // no school
+    // stats.EDUC02_CY_TOTAL, // preschool
+    stats.EDUC03_CY_TOTAL, // some elementary
+    // stats.EDUC04_CY_TOTAL + stats.EDUC07_CY_TOTAL, // elementary
+    // stats.EDUC06_CY_TOTAL + stats.EDUC08_CY_TOTAL, // secondary
+    // stats.EDUC09_CY_TOTAL + stats.EDUC11_CY_TOTAL, // high school
+    // stats.EDUC10_CY_TOTAL +
+    //   stats.EDUC12_CY_TOTAL +
+    //   stats.EDUC13_CY_TOTAL +
+    stats.EDUC14_CY_TOTAL + stats.EDUC15_CY_TOTAL, // college
+  ].sort((a, b) => b - a);
+
+  const updatedDataPlus = updatedData.map((v: number) => v + +10000);
+
+  let totalUpdatedData = 0;
+  updatedDataPlus.forEach((v: number) => (totalUpdatedData += v));
+
+  const updatedDataPercentage = updatedDataPlus.map(
+    (v: number) => (v / totalUpdatedData) * 100
+  );
+  let checkTotalData = 0;
+  updatedDataPercentage.forEach((v: number) => (checkTotalData += v));
+
+  const numLedsPerClass = updatedDataPercentage.map((v: number) =>
+    Math.round(totalNumberOfLeds * (v / 100))
+  );
+  let checkTotalLeds = 0;
+  numLedsPerClass.forEach((v: number) => (checkTotalLeds += v));
+
+  console.log(
+    "percentage",
+    updatedData,
+    updatedDataPercentage,
+    checkTotalData,
+    numLedsPerClass,
+    checkTotalLeds
+  );
+
+  console.log("layer", artnetStore.flv.layer.renderer);
+
+  if (artnetStore.flv.layer.renderer.type === "unique-value") {
+    artnetStore.colors = [];
+    artnetStore.colors.push(
+      ...(
+        artnetStore.flv.layer.renderer as __esri.UniqueValueRenderer
+      ).uniqueValueInfos.map((ui: __esri.UniqueValueInfo) => ui.symbol.color)
+    );
+  }
+
+  const ledNumsAndColors = numLedsPerClass.map((numLeds: number, i: number) => {
+    return {
+      numLeds: numLeds,
+      color: new Color(artnetStore.colors[i]),
+    } as LedNumsAndColors;
+  });
+  artnetStore.ledNumsAndColors = ledNumsAndColors;
+
+  const ledVals: number[] = [];
+  const ledValsRows: number[][] = [];
+  ledValsRows.push([]);
+  ledValsRows.push([]);
+  ledValsRows.push([]);
+  ledValsRows.push([]);
+  ledValsRows.push([]);
+  ledValsRows.push([]);
+
+  artnetStore.ledNumsAndColors.forEach((lc: LedNumsAndColors) => {
+    console.log("lc", lc);
+    const numRows = 6;
+    const numLedsPerRow = Math.round(lc.numLeds / numRows);
+    console.log("numLedsPerRow", numLedsPerRow, numRows);
+    for (let n = 0; n < numRows; n++) {
+      let row: number[] = [];
+      for (let i = 0; i < numLedsPerRow; i++) {
+        row.push(Math.round(factorizeColor(lc.color.r) * 0.2));
+        row.push(Math.round(factorizeColor(lc.color.g)));
+        row.push(Math.round(factorizeColor(lc.color.b) * 0.5));
+      }
+      ledValsRows[n].push(...row);
+    }
+  });
+  const ledValsRowClipped = ledValsRows.map((r: number[], i: number) => {
+    let slicedRow = r.slice(0, 75);
+    if (i % 2 > 0) {
+      slicedRow = reverseRgbRow(slicedRow);
+    }
+    while (slicedRow.length < 75) {
+      const r = slicedRow[slicedRow.length - 3];
+      const g = slicedRow[slicedRow.length - 2];
+      const b = slicedRow[slicedRow.length - 1];
+      slicedRow.push(r, g, b);
+    }
+    // console.log(slicedRow.length, slicedRow);
+    return slicedRow;
+  });
+  ledVals.push(...ledValsRowClipped.flat());
+
+  sendViaAxios(ledVals);
 }
 
 function reverseRgbRow(row: number[]) {
@@ -292,6 +241,7 @@ function factorizeColor(c: number): number {
 const ArtnetCmp: React.FC<ArtnetCmpProps> = observer(
   (props: ArtnetCmpProps) => {
     const { artnetStore, mapStore } = useStores();
+
     useEffect(() => {
       // distLedVals(artnetStore);
       // dummyLedVals(artnetStore);
@@ -324,6 +274,13 @@ const ArtnetCmp: React.FC<ArtnetCmpProps> = observer(
           )}
         </p>
         <p>{mapStore.stationary ? "stationary" : "moving"}</p>
+        {artnetStore.colors.map((c: __esri.Color) => {
+          return (
+            <div
+              style={{ marginRight: "5em" }} //{`background-color:${c.toHex};display:block;width:20px;height:20px;`}
+            ></div>
+          );
+        })}
       </div>
     );
   }

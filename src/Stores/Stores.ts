@@ -39,6 +39,6 @@ export class Stores implements IStores {
     this.mapStore = new MapStore(this.appStore);
     this.editStore = new EditStore(this.appStore);
     this.statusStore = new StatusStore(this.appStore);
-    this.artnetStore = new ArtnetStore(this.appStore);
+    this.artnetStore = new ArtnetStore(this.appStore, this.mapStore);
   }
 }

@@ -11,6 +11,7 @@ import LayerView from "@arcgis/core/views/layers/LayerView";
 import Layer from "@arcgis/core/layers/Layer";
 import FeatureLayer from "@arcgis/core/layers/FeatureLayer";
 import Color from "@arcgis/core/Color";
+import * as arcade from "@arcgis/core/arcade.js";
 // import StatisticDefinition = require("esri/tasks/StatisticDefinition");
 
 export type LedNumsAndColors = {
@@ -86,6 +87,7 @@ async function statisticsLedVals(
   mapStore: MapStore
   // config: Config
 ): Promise<void> {
+  console.debug(`##### statisticsLedVals`);
   if (!mapStore.mapView) {
     console.warn(`No map view.`);
     return;
@@ -93,6 +95,44 @@ async function statisticsLedVals(
     console.warn(`No feature layer view.`);
     return;
   }
+
+  // START ARCADE
+
+  const renderer = artnetStore.flv.layer.renderer;
+  const valueExpression = (renderer as __esri.UniqueValueRenderer)
+    .valueExpression;
+
+  const visualizationProfile = {
+    variables: [
+      {
+        name: "$feature",
+        type: "feature",
+      },
+      {
+        name: "$view",
+        type: "dictionary",
+        properties: [
+          {
+            name: "scale",
+            type: "number",
+          },
+        ],
+      },
+    ],
+  } as __esri.Profile;
+
+  const uniqueValueExpressionArcadeExecutor = await arcade.createArcadeExecutor(
+    valueExpression,
+    visualizationProfile
+  );
+
+  console.log(
+    "uniqueValueExpressionArcadeExecutor",
+    uniqueValueExpressionArcadeExecutor
+  );
+
+  /// END ARCADE
+
   const statsResult = await artnetStore.flv.queryFeatures(
     artnetStore.statsQuery
   );
@@ -119,8 +159,8 @@ async function statisticsLedVals(
     // stats.EDUC02_CY_TOTAL, // preschool
     stats.EDUC03_CY_TOTAL, // some elementary
     // stats.EDUC04_CY_TOTAL + stats.EDUC07_CY_TOTAL, // elementary
-    // stats.EDUC06_CY_TOTAL + stats.EDUC08_CY_TOTAL, // secondary
-    // stats.EDUC09_CY_TOTAL + stats.EDUC11_CY_TOTAL, // high school
+    stats.EDUC06_CY_TOTAL + stats.EDUC08_CY_TOTAL, // secondary
+    stats.EDUC09_CY_TOTAL + stats.EDUC11_CY_TOTAL, // high school
     // stats.EDUC10_CY_TOTAL +
     //   stats.EDUC12_CY_TOTAL +
     //   stats.EDUC13_CY_TOTAL +
@@ -153,7 +193,7 @@ async function statisticsLedVals(
     checkTotalLeds
   );
 
-  console.log("layer", artnetStore.flv.layer.renderer);
+  // console.log("layer", artnetStore.flv.layer.renderer);
 
   if (artnetStore.flv.layer.renderer.type === "unique-value") {
     artnetStore.colors = [];
@@ -246,7 +286,7 @@ const ArtnetCmp: React.FC<ArtnetCmpProps> = observer(
       // distLedVals(artnetStore);
       // dummyLedVals(artnetStore);
       statisticsLedVals(artnetStore, mapStore);
-    }, [artnetStore, mapStore.stationary]);
+    }, [artnetStore, mapStore, mapStore.stationary]);
 
     // const response = fetch("http://127.0.0.1:9000", {
     //   method: "post",
@@ -272,15 +312,21 @@ const ArtnetCmp: React.FC<ArtnetCmpProps> = observer(
           {artnetStore.ledNumsAndColors.map(
             (n: LedNumsAndColors) => `${n.color}: ${n.numLeds}\n`
           )}
+          {mapStore.stationary ? "stationary" : "moving"}
+          <br />
+          {artnetStore.colors.map((c: __esri.Color) => {
+            return (
+              <div
+                style={{
+                  backgroundColor: c.toHex(),
+                  display: "inline-block",
+                  width: "20px",
+                  height: "20px",
+                }}
+              ></div>
+            );
+          })}
         </p>
-        <p>{mapStore.stationary ? "stationary" : "moving"}</p>
-        {artnetStore.colors.map((c: __esri.Color) => {
-          return (
-            <div
-              style={{ marginRight: "5em" }} //{`background-color:${c.toHex};display:block;width:20px;height:20px;`}
-            ></div>
-          );
-        })}
       </div>
     );
   }

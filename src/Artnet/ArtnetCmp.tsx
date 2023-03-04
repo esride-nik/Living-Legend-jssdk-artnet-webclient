@@ -133,16 +133,6 @@ async function statisticsLedVals(
     uniqueValueExpressionArcadeExecutor
   );
 
-  // Get renderer colors
-  if (artnetStore.flv.layer.renderer.type === "unique-value") {
-    artnetStore.colors = [];
-    artnetStore.colors.push(
-      ...(
-        artnetStore.flv.layer.renderer as __esri.UniqueValueRenderer
-      ).uniqueValueInfos.map((ui: __esri.UniqueValueInfo) => ui.symbol.color)
-    );
-  }
-
   // Get the data
   const { features } = await artnetStore.flv.queryFeatures();
 
@@ -168,6 +158,20 @@ async function statisticsLedVals(
   });
   // When all promises are fulfilled, the list in artnetStore.ledNumsAndColors is complete
   await Promise.all(predominantValueExecutorPromises);
+
+  // Get renderer colors
+  if (artnetStore.flv.layer.renderer.type === "unique-value") {
+    (
+      artnetStore.flv.layer.renderer as __esri.UniqueValueRenderer
+    ).uniqueValueInfos.forEach((u: __esri.UniqueValueInfo) => {
+      const found = artnetStore.ledNumsAndColors.find(
+        (l: LedNumsAndColors) => l.value === u.value
+      );
+      if (found !== undefined) {
+        found.color = u.symbol.color;
+      }
+    });
+  }
 
   // Data to LEDs
   artnetStore.ledNumsAndColors.forEach(

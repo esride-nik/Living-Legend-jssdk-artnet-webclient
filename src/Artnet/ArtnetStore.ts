@@ -6,7 +6,7 @@ import { LedNumsAndColors } from "./ArtnetCmp";
 class ArtnetStore {
   private readonly appStore: AppStore;
   private readonly mapStore: MapStore;
-  private _ledNumsAndColors: LedNumsAndColors[] = [];
+  ledNumsAndColors: LedNumsAndColors[] = [];
   statsQuery: __esri.Query | undefined;
   flv: __esri.FeatureLayerView | undefined;
 
@@ -14,6 +14,8 @@ class ArtnetStore {
     this.appStore = appStore;
     this.mapStore = mapStore;
     makeObservable(this, {
+      ledNumsAndColors: observable,
+      setLedNumsAndColors: action,
       pushLedNumsAndColors: action,
     });
 
@@ -25,16 +27,12 @@ class ArtnetStore {
     );
   }
 
-  get ledNumsAndColors() {
-    return this._ledNumsAndColors;
-  }
-
-  set ledNumsAndColors(l: LedNumsAndColors[]) {
-    this._ledNumsAndColors = l;
+  setLedNumsAndColors(l: LedNumsAndColors[]) {
+    this.ledNumsAndColors = l;
   }
 
   pushLedNumsAndColors(l: LedNumsAndColors) {
-    this._ledNumsAndColors.push(l);
+    this.ledNumsAndColors.push(l);
   }
 
   private waitForLayerViews = async (): Promise<void> => {

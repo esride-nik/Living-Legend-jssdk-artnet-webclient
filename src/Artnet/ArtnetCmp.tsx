@@ -77,7 +77,7 @@ async function statisticsLedVals(
   // Get the data
   const { features } = await artnetStore.flv.queryFeatures();
 
-  artnetStore.ledNumsAndColors = [];
+  artnetStore.setLedNumsAndColors([]);
   const predominantValueExecutorPromises = features.map(async (feature) => {
     // Execute the Arcade expression for each feature in the layer view
     const data = await uniqueValueExpressionArcadeExecutor.executeAsync({
@@ -90,7 +90,7 @@ async function statisticsLedVals(
     if (found !== undefined) {
       found.numFeatures++;
     } else {
-      artnetStore.ledNumsAndColors.push({
+      artnetStore.pushLedNumsAndColors({
         value: data,
         numFeatures: 1,
       } as LedNumsAndColors);

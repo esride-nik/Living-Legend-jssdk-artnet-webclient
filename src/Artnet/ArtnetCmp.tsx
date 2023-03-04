@@ -6,6 +6,7 @@ import "./Artnet.css";
 import axios from "axios";
 import ArtnetStore, { LedNumsAndColors } from "./ArtnetStore";
 import MapStore from "Map/MapStore";
+import Color from "@arcgis/core/Color";
 
 interface ArtnetCmpProps {}
 
@@ -76,6 +77,12 @@ async function statisticsLedVals(
     });
   }
 
+  // Overwrite LedColors
+  artnetStore.ledNumsAndColors.forEach((l: LedNumsAndColors) => {
+    const correctionColor = new Color({ r: 50, g: 10, b: 10 });
+    l.ledColor = Color.blendColors(l.color, correctionColor, 0.5);
+  });
+
   // Data to LEDs
   artnetStore.ledNumsAndColors.forEach(
     (l: LedNumsAndColors) =>
@@ -102,9 +109,9 @@ async function statisticsLedVals(
     for (let n = 0; n < numRows; n++) {
       let row: number[] = [];
       for (let i = 0; i < numLedsPerRow; i++) {
-        row.push(Math.round(factorizeColor(lc.color.r) * 0.2));
-        row.push(Math.round(factorizeColor(lc.color.g)));
-        row.push(Math.round(factorizeColor(lc.color.b) * 0.5));
+        row.push(Math.round(factorizeColor(lc.ledColor.r) * 0.2));
+        row.push(Math.round(factorizeColor(lc.ledColor.g)));
+        row.push(Math.round(factorizeColor(lc.ledColor.b) * 0.5));
       }
       ledValsRows[n].push(...row);
     }

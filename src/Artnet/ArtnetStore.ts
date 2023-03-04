@@ -8,6 +8,7 @@ export type LedNumsAndColors = {
   numPercentage: number;
   value: string;
   color: __esri.Color;
+  ledColor: __esri.Color;
 };
 
 class ArtnetStore {

@@ -6,13 +6,8 @@ import "./Artnet.css";
 import axios from "axios";
 import ArtnetStore from "./ArtnetStore";
 import MapStore from "Map/MapStore";
-import FeatureLayerView from "@arcgis/core/views/layers/FeatureLayerView";
-import LayerView from "@arcgis/core/views/layers/LayerView";
-import Layer from "@arcgis/core/layers/Layer";
-import FeatureLayer from "@arcgis/core/layers/FeatureLayer";
 import Color from "@arcgis/core/Color";
 import * as arcade from "@arcgis/core/arcade.js";
-// import StatisticDefinition = require("esri/tasks/StatisticDefinition");
 
 export type LedNumsAndColors = {
   numLeds: number;
@@ -280,22 +275,47 @@ const ArtnetCmp: React.FC<ArtnetCmpProps> = observer(
 
     return (
       <div id="artnet">
-        <p>
-          {artnetStore.ledNumsAndColors.map(
-            (n: LedNumsAndColors) => `${n.color}: ${n.numLeds}\n`
-          )}
-          {mapStore.stationary ? "stationary" : "moving"}
-          <br />
-          {artnetStore.colors.map((c: __esri.Color) => {
+        {mapStore.stationary ? (
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 32 32"
+            className="svg-icon"
+          >
+            <path d="M26 4v24h-6V4h6zM6 28h6V4H6v24z" />
+          </svg>
+        ) : (
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 32 32"
+            className="svg-icon"
+          >
+            <path d="M32.047 16.047l-6-6v4H18V6h4L16.047.047l-6 5.953h4v8.047H6v-4l-5.953 6 5.953 6V18h8.047v8.047h-4l6 6 6-6H18V18h8.047v4.047z" />
+          </svg>
+        )}
+        <p className="legend-container">
+          {artnetStore.ledNumsAndColors.map((l: LedNumsAndColors) => {
             return (
               <div
                 style={{
-                  backgroundColor: c.toHex(),
+                  backgroundColor:
+                    l !== undefined && l.color !== undefined
+                      ? l.color.toHex()
+                      : "#000000",
                   display: "inline-block",
-                  width: "20px",
+                  width: `${
+                    l !== undefined && l.numLeds !== undefined
+                      ? l.numLeds * 3
+                      : 5
+                  }px`,
                   height: "20px",
                 }}
-              ></div>
+              >
+                {l !== undefined && l.numLeds !== undefined ? l.numLeds : ""}
+              </div>
             );
           })}
         </p>

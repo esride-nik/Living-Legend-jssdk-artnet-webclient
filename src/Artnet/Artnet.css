@@ -1,11 +1,24 @@
 #artnet {
-  height:20vh;
-  width:20vw;
+  height: 50px;
   position:absolute;
   right:5vw;
   top:5vh;
   top: 5vh;
-  background-color: antiquewhite;
+  background-color: rgba(255,255,255,0.8);
   border: 1px solid chocolate;
   font-size: small;
+}
+
+.svg-icon {
+  padding-left: 30px;
+  padding-right: 30px;
+  position: relative;
+  top: 8px;
+}
+
+.legend-container {
+  display: inline-block;
+  padding-right: 30px;
+  top: 2px;
+  position: relative;
 }

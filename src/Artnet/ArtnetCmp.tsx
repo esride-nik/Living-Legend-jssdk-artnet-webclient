@@ -4,17 +4,8 @@ import { useEffect } from "react";
 import { useStores } from "../Stores/useStores";
 import "./Artnet.css";
 import axios from "axios";
-import ArtnetStore from "./ArtnetStore";
+import ArtnetStore, { LedNumsAndColors } from "./ArtnetStore";
 import MapStore from "Map/MapStore";
-import Color from "@arcgis/core/Color";
-
-export type LedNumsAndColors = {
-  numLeds: number;
-  numFeatures: number;
-  numPercentage: number;
-  value: string;
-  color: Color;
-};
 
 interface ArtnetCmpProps {}
 

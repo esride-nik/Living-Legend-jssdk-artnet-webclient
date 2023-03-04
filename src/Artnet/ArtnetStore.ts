@@ -1,7 +1,14 @@
 import MapStore from "Map/MapStore";
 import { action, makeObservable, observable, when } from "mobx";
-import { LedNumsAndColors } from "./ArtnetCmp";
 import * as arcade from "@arcgis/core/arcade.js";
+
+export type LedNumsAndColors = {
+  numLeds: number;
+  numFeatures: number;
+  numPercentage: number;
+  value: string;
+  color: __esri.Color;
+};
 
 class ArtnetStore {
   private readonly mapStore: MapStore;

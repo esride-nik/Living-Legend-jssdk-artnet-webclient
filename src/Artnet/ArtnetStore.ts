@@ -1,19 +1,16 @@
 import MapStore from "Map/MapStore";
 import { action, makeObservable, observable, when } from "mobx";
-import AppStore from "../Stores/AppStore";
 import { LedNumsAndColors } from "./ArtnetCmp";
 import * as arcade from "@arcgis/core/arcade.js";
 
 class ArtnetStore {
-  private readonly appStore: AppStore;
   private readonly mapStore: MapStore;
   ledNumsAndColors: LedNumsAndColors[] = [];
   statsQuery: __esri.Query | undefined;
   flv: __esri.FeatureLayerView | undefined;
   uniqueValueExpressionArcadeExecutor: __esri.ArcadeExecutor | undefined;
 
-  constructor(appStore: AppStore, mapStore: MapStore) {
-    this.appStore = appStore;
+  constructor(mapStore: MapStore) {
     this.mapStore = mapStore;
     makeObservable(this, {
       ledNumsAndColors: observable,

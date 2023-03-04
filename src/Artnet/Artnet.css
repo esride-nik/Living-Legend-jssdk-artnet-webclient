@@ -13,12 +13,12 @@
   padding-left: 30px;
   padding-right: 30px;
   position: relative;
-  top: 8px;
+  top: 14px;
 }
 
 .legend-container {
   display: inline-block;
   padding-right: 30px;
-  top: 2px;
+  top: 9px;
   position: relative;
 }

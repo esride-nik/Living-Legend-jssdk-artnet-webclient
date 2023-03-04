@@ -21,11 +21,6 @@ interface ArtnetCmpProps {}
 
 const totalNumberOfLeds = 150;
 
-function addRandomValue(org: number, mult: number) {
-  const newVal = org + Math.random() * mult;
-  return newVal <= 255 ? Math.round(newVal) : Math.round(newVal - 255);
-}
-
 async function sendViaAxios(ledVals: number[]) {
   const axiosProps = {
     method: "post",
@@ -33,51 +28,8 @@ async function sendViaAxios(ledVals: number[]) {
     data: ledVals,
     headers: { "Content-Type": "application/json" },
   };
-  console.log("sending via axios", axiosProps);
+  console.debug("sending via axios", axiosProps);
   await axios(axiosProps);
-}
-
-function distLedVals(artnetStore: ArtnetStore): void {
-  const numberOfLeds = 150;
-  const ledVals: number[] = [];
-
-  var data = [],
-    a = 1,
-    b = 2;
-
-  for (let i = 0; i < numberOfLeds; i++) {
-    const factor = a * Math.pow(b, 0.0065 * i) - 1;
-    data.push(factor);
-
-    ledVals.push(i * factor);
-    ledVals.push(i * factor);
-    ledVals.push(0);
-  }
-
-  console.log(
-    "expData",
-    JSON.stringify(data),
-    data[75] - data[50],
-    data[125] - data[100]
-  );
-
-  console.log("dist ledVals", ledVals);
-  sendViaAxios(ledVals);
-}
-
-function dummyLedVals(artnetStore: ArtnetStore): void {
-  artnetStore.rVal = addRandomValue(artnetStore.rValue, 10);
-  artnetStore.gVal = addRandomValue(artnetStore.gValue, 10);
-  artnetStore.bVal = addRandomValue(artnetStore.bValue, 10);
-
-  const numberOfLeds = 150;
-  const ledVals: number[] = [];
-  for (let i = 0; i < numberOfLeds; i++) {
-    ledVals.push(Math.round(artnetStore.rValue + i / 5));
-    ledVals.push(Math.round(artnetStore.gValue + i / 5));
-    ledVals.push(Math.round(artnetStore.bValue + i / 5));
-  }
-  sendViaAxios(ledVals);
 }
 
 async function statisticsLedVals(
@@ -85,7 +37,6 @@ async function statisticsLedVals(
   mapStore: MapStore
   // config: Config
 ): Promise<void> {
-  console.debug(`##### statisticsLedVals`);
   if (!mapStore.mapView) {
     console.warn(`No map view.`);
     return;
@@ -121,11 +72,6 @@ async function statisticsLedVals(
   const uniqueValueExpressionArcadeExecutor = await arcade.createArcadeExecutor(
     valueExpression,
     visualizationProfile
-  );
-
-  console.log(
-    "uniqueValueExpressionArcadeExecutor",
-    uniqueValueExpressionArcadeExecutor
   );
 
   // Get the data
@@ -189,10 +135,8 @@ async function statisticsLedVals(
   ledValsRows.push([]);
 
   artnetStore.ledNumsAndColors.forEach((lc: LedNumsAndColors) => {
-    console.log("LedNumsAndColors", lc);
     const numRows = 6;
     const numLedsPerRow = Math.round(lc.numLeds / numRows);
-    console.log("numLedsPerRow", numLedsPerRow, numRows);
     for (let n = 0; n < numRows; n++) {
       let row: number[] = [];
       for (let i = 0; i < numLedsPerRow; i++) {
@@ -214,7 +158,6 @@ async function statisticsLedVals(
       const b = slicedRow[slicedRow.length - 1];
       slicedRow.push(r, g, b);
     }
-    // console.log(slicedRow.length, slicedRow);
     return slicedRow;
   });
   ledVals.push(...ledValsRowClipped.flat());
@@ -250,28 +193,8 @@ const ArtnetCmp: React.FC<ArtnetCmpProps> = observer(
     const { artnetStore, mapStore } = useStores();
 
     useEffect(() => {
-      // distLedVals(artnetStore);
-      // dummyLedVals(artnetStore);
       statisticsLedVals(artnetStore, mapStore);
     }, [artnetStore, mapStore, mapStore.stationary]);
-
-    // const response = fetch("http://127.0.0.1:9000", {
-    //   method: "post",
-    //   body: JSON.stringify(ledVals),
-    //   headers: { "Content-Type": "application/json" },
-    // });
-    // console.log(response);
-
-    // const axiosProps = {
-    //   method: "post",
-    //   url: "http://127.0.0.1:9000",
-    //   data: ledVals,
-    //   headers: { "Content-Type": "application/json" },
-    // };
-    // console.log("sending via axios", axiosProps);
-    // axios(axiosProps);
-
-    // curl -X POST 127.0.0.1:9000 -H "Content-Type: application/json" -d "[0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,0,255,150,255,255,0]"
 
     return (
       <div id="artnet">
@@ -296,10 +219,11 @@ const ArtnetCmp: React.FC<ArtnetCmpProps> = observer(
             <path d="M32.047 16.047l-6-6v4H18V6h4L16.047.047l-6 5.953h4v8.047H6v-4l-5.953 6 5.953 6V18h8.047v8.047h-4l6 6 6-6H18V18h8.047v4.047z" />
           </svg>
         )}
-        <p className="legend-container">
+        <div className="legend-container">
           {artnetStore.ledNumsAndColors.map((l: LedNumsAndColors) => {
             return (
               <div
+                key={l.value}
                 style={{
                   backgroundColor:
                     l !== undefined && l.color !== undefined
@@ -318,7 +242,7 @@ const ArtnetCmp: React.FC<ArtnetCmpProps> = observer(
               </div>
             );
           })}
-        </p>
+        </div>
       </div>
     );
   }

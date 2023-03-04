@@ -1,16 +1,12 @@
 import MapStore from "Map/MapStore";
-import { action, makeObservable, observable, when } from "mobx";
+import { action, computed, makeObservable, observable, when } from "mobx";
 import AppStore from "../Stores/AppStore";
 import { LedNumsAndColors } from "./ArtnetCmp";
 
 class ArtnetStore {
   private readonly appStore: AppStore;
   private readonly mapStore: MapStore;
-  rValue: number = 0;
-  gValue: number = 100;
-  bValue: number = 200;
-  ledNumsAndColors: LedNumsAndColors[] = [];
-  colors: __esri.Color[] = [];
+  private _ledNumsAndColors: LedNumsAndColors[] = [];
   statsQuery: __esri.Query | undefined;
   flv: __esri.FeatureLayerView | undefined;
 
@@ -18,32 +14,27 @@ class ArtnetStore {
     this.appStore = appStore;
     this.mapStore = mapStore;
     makeObservable(this, {
-      rValue: observable,
-      gValue: observable,
-      bValue: observable,
-      ledNumsAndColors: observable,
-      colors: observable,
+      pushLedNumsAndColors: action,
     });
 
     when(
       () => this.mapStore.mapView !== undefined,
       () => {
-        // this.initArtnetValues();
         this.waitForLayerViews();
       }
     );
   }
 
-  set rVal(r: number) {
-    this.rValue = r;
+  get ledNumsAndColors() {
+    return this._ledNumsAndColors;
   }
 
-  set gVal(g: number) {
-    this.gValue = g;
+  set ledNumsAndColors(l: LedNumsAndColors[]) {
+    this._ledNumsAndColors = l;
   }
 
-  set bVal(b: number) {
-    this.bValue = b;
+  pushLedNumsAndColors(l: LedNumsAndColors) {
+    this._ledNumsAndColors.push(l);
   }
 
   private waitForLayerViews = async (): Promise<void> => {

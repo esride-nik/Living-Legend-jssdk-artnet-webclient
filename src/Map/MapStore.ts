@@ -29,6 +29,7 @@ class MapStore {
       mapView: observable,
       layerVisibility: observable,
       stationary: observable,
+      setStationary: action,
       setMapView: action,
       setCenter: action,
     });

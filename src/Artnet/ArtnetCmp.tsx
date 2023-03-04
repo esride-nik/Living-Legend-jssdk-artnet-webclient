@@ -16,6 +16,9 @@ import * as arcade from "@arcgis/core/arcade.js";
 
 export type LedNumsAndColors = {
   numLeds: number;
+  numFeatures: number;
+  numPercentage: number;
+  value: string;
   color: Color;
 };
 
@@ -143,29 +146,39 @@ async function statisticsLedVals(
   // Get the data
   const { features } = await artnetStore.flv.queryFeatures();
 
-  const chartPoints = features.map(async (feature) => {
+  artnetStore.ledNumsAndColors = [];
+  const predominantValueExecutorPromises = features.map(async (feature) => {
     // Execute the Arcade expression for each feature in the layer view
     const data = await uniqueValueExpressionArcadeExecutor.executeAsync({
       $feature: feature,
       $view: artnetStore.flv,
     });
+    const found = artnetStore.ledNumsAndColors.find(
+      (l: LedNumsAndColors) => l.value === data
+    );
+    if (found !== undefined) {
+      found.numFeatures++;
+    } else {
+      artnetStore.ledNumsAndColors.push({
+        value: data,
+        numFeatures: 1,
+      } as LedNumsAndColors);
+    }
     return data;
   });
-  const chartDataArray = await Promise.all(chartPoints);
+  // When all promises are fulfilled, the list in artnetStore.ledNumsAndColors is complete
+  await Promise.all(predominantValueExecutorPromises);
 
   // Data to LEDs
+  artnetStore.ledNumsAndColors.forEach(
+    (l: LedNumsAndColors) =>
+      (l.numPercentage = (l.numFeatures / features.length) * 100)
+  );
 
-  // const numLedsPerClass = updatedDataPercentage.map((v: number) =>
-  //   Math.round(totalNumberOfLeds * (v / 100))
-  // );
-
-  // const ledNumsAndColors = numLedsPerClass.map((numLeds: number, i: number) => {
-  //   return {
-  //     numLeds: numLeds,
-  //     color: new Color(artnetStore.colors[i]),
-  //   } as LedNumsAndColors;
-  // });
-  // artnetStore.ledNumsAndColors = ledNumsAndColors;
+  artnetStore.ledNumsAndColors.forEach(
+    (l: LedNumsAndColors) =>
+      (l.numLeds = Math.round(totalNumberOfLeds * (l.numPercentage / 100)))
+  );
 
   const ledVals: number[] = [];
   const ledValsRows: number[][] = [];
@@ -177,7 +190,7 @@ async function statisticsLedVals(
   ledValsRows.push([]);
 
   artnetStore.ledNumsAndColors.forEach((lc: LedNumsAndColors) => {
-    console.log("lc", lc);
+    console.log("LedNumsAndColors", lc);
     const numRows = 6;
     const numLedsPerRow = Math.round(lc.numLeds / numRows);
     console.log("numLedsPerRow", numLedsPerRow, numRows);

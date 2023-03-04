@@ -96,8 +96,7 @@ async function statisticsLedVals(
     return;
   }
 
-  // START ARCADE
-
+  // Arcade Executor Definition
   const renderer = artnetStore.flv.layer.renderer;
   const valueExpression = (renderer as __esri.UniqueValueRenderer)
     .valueExpression;
@@ -131,70 +130,7 @@ async function statisticsLedVals(
     uniqueValueExpressionArcadeExecutor
   );
 
-  /// END ARCADE
-
-  const statsResult = await artnetStore.flv.queryFeatures(
-    artnetStore.statsQuery
-  );
-  const stats = statsResult.features[0].attributes;
-  // console.log("stats", stats);
-
-  // const updatedData = [
-  //   stats.EDUC01_CY_TOTAL, // no school
-  //   stats.EDUC02_CY_TOTAL, // preschool
-  //   stats.EDUC03_CY_TOTAL, // some elementary
-  //   stats.EDUC04_CY_TOTAL + stats.EDUC07_CY_TOTAL, // elementary
-  //   stats.EDUC05_CY_TOTAL, // some secondary
-  //   stats.EDUC06_CY_TOTAL + stats.EDUC08_CY_TOTAL, // secondary
-  //   stats.EDUC09_CY_TOTAL + stats.EDUC11_CY_TOTAL, // high school
-  //   stats.EDUC10_CY_TOTAL +
-  //     stats.EDUC12_CY_TOTAL +
-  //     stats.EDUC13_CY_TOTAL +
-  //     stats.EDUC14_CY_TOTAL +
-  //     stats.EDUC15_CY_TOTAL, // college
-  //   stats.EDUC16_CY_TOTAL, // not specified
-  // ].sort((a, b) => b - a);
-  const updatedData = [
-    stats.EDUC01_CY_TOTAL, // no school
-    // stats.EDUC02_CY_TOTAL, // preschool
-    stats.EDUC03_CY_TOTAL, // some elementary
-    // stats.EDUC04_CY_TOTAL + stats.EDUC07_CY_TOTAL, // elementary
-    stats.EDUC06_CY_TOTAL + stats.EDUC08_CY_TOTAL, // secondary
-    stats.EDUC09_CY_TOTAL + stats.EDUC11_CY_TOTAL, // high school
-    // stats.EDUC10_CY_TOTAL +
-    //   stats.EDUC12_CY_TOTAL +
-    //   stats.EDUC13_CY_TOTAL +
-    stats.EDUC14_CY_TOTAL + stats.EDUC15_CY_TOTAL, // college
-  ].sort((a, b) => b - a);
-
-  const updatedDataPlus = updatedData.map((v: number) => v + +10000);
-
-  let totalUpdatedData = 0;
-  updatedDataPlus.forEach((v: number) => (totalUpdatedData += v));
-
-  const updatedDataPercentage = updatedDataPlus.map(
-    (v: number) => (v / totalUpdatedData) * 100
-  );
-  let checkTotalData = 0;
-  updatedDataPercentage.forEach((v: number) => (checkTotalData += v));
-
-  const numLedsPerClass = updatedDataPercentage.map((v: number) =>
-    Math.round(totalNumberOfLeds * (v / 100))
-  );
-  let checkTotalLeds = 0;
-  numLedsPerClass.forEach((v: number) => (checkTotalLeds += v));
-
-  console.log(
-    "percentage",
-    updatedData,
-    updatedDataPercentage,
-    checkTotalData,
-    numLedsPerClass,
-    checkTotalLeds
-  );
-
-  // console.log("layer", artnetStore.flv.layer.renderer);
-
+  // Get renderer colors
   if (artnetStore.flv.layer.renderer.type === "unique-value") {
     artnetStore.colors = [];
     artnetStore.colors.push(
@@ -204,13 +140,32 @@ async function statisticsLedVals(
     );
   }
 
-  const ledNumsAndColors = numLedsPerClass.map((numLeds: number, i: number) => {
-    return {
-      numLeds: numLeds,
-      color: new Color(artnetStore.colors[i]),
-    } as LedNumsAndColors;
+  // Get the data
+  const { features } = await artnetStore.flv.queryFeatures();
+
+  const chartPoints = features.map(async (feature) => {
+    // Execute the Arcade expression for each feature in the layer view
+    const data = await uniqueValueExpressionArcadeExecutor.executeAsync({
+      $feature: feature,
+      $view: artnetStore.flv,
+    });
+    return data;
   });
-  artnetStore.ledNumsAndColors = ledNumsAndColors;
+  const chartDataArray = await Promise.all(chartPoints);
+
+  // Data to LEDs
+
+  // const numLedsPerClass = updatedDataPercentage.map((v: number) =>
+  //   Math.round(totalNumberOfLeds * (v / 100))
+  // );
+
+  // const ledNumsAndColors = numLedsPerClass.map((numLeds: number, i: number) => {
+  //   return {
+  //     numLeds: numLeds,
+  //     color: new Color(artnetStore.colors[i]),
+  //   } as LedNumsAndColors;
+  // });
+  // artnetStore.ledNumsAndColors = ledNumsAndColors;
 
   const ledVals: number[] = [];
   const ledValsRows: number[][] = [];

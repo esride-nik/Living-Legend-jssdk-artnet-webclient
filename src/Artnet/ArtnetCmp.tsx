@@ -7,7 +7,6 @@ import axios from "axios";
 import ArtnetStore from "./ArtnetStore";
 import MapStore from "Map/MapStore";
 import Color from "@arcgis/core/Color";
-import * as arcade from "@arcgis/core/arcade.js";
 
 export type LedNumsAndColors = {
   numLeds: number;
@@ -45,45 +44,17 @@ async function statisticsLedVals(
     return;
   }
 
-  // Arcade Executor Definition
-  const renderer = artnetStore.flv.layer.renderer;
-  const valueExpression = (renderer as __esri.UniqueValueRenderer)
-    .valueExpression;
-
-  const visualizationProfile = {
-    variables: [
-      {
-        name: "$feature",
-        type: "feature",
-      },
-      {
-        name: "$view",
-        type: "dictionary",
-        properties: [
-          {
-            name: "scale",
-            type: "number",
-          },
-        ],
-      },
-    ],
-  } as __esri.Profile;
-
-  const uniqueValueExpressionArcadeExecutor = await arcade.createArcadeExecutor(
-    valueExpression,
-    visualizationProfile
-  );
-
   // Get the data
   const { features } = await artnetStore.flv.queryFeatures();
 
   artnetStore.setLedNumsAndColors([]);
   const predominantValueExecutorPromises = features.map(async (feature) => {
     // Execute the Arcade expression for each feature in the layer view
-    const data = await uniqueValueExpressionArcadeExecutor.executeAsync({
-      $feature: feature,
-      $view: artnetStore.flv,
-    });
+    const data =
+      await artnetStore.uniqueValueExpressionArcadeExecutor?.executeAsync({
+        $feature: feature,
+        $view: artnetStore.flv,
+      });
     const found = artnetStore.ledNumsAndColors.find(
       (l: LedNumsAndColors) => l.value === data
     );

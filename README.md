@@ -1,4 +1,7 @@
-# Minimalistic ArcGIS JSAPI Map with React
+# Living Legend
+made with the ArcGIS Maps SDK for JavaScript, Node.js and ESP32.
+
+---
 
 Send the map legend to a RGB LED strip like [here](https://www.instagram.com/reel/CpglP7nA4MB)!
 

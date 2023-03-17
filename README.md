@@ -27,7 +27,7 @@ After each calculation, the data is being sent out to localhost.
 You can use my fork of Dewb's [``artnet-http`` project](https://github.com/esride-nik/artnet-http) to run a small Node.js application on localhost that receives data from the map, transforms it into Artnet and sends it over to the ESP32.
 
 ### esp32_artnet
-Use this ESP32 firmware to receive data from ``artnet-http`` and put it on your LED strip via FastLED.
+Use this [ESP32 firmware](https://github.com/esride-nik/esp32_artnet) to receive data from ``artnet-http`` and put it on your LED strip via FastLED.
 
 
 ---

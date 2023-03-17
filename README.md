@@ -1,24 +1,30 @@
 # Minimalistic ArcGIS JSAPI Map with React
 
-There is a basic difference between the class-based Esri Map and the component-based UI framework React.
+Send the map legend to a RGB LED strip like [here](https://www.instagram.com/reel/CpglP7nA4MB)!
 
-| Esri Map Class | React Component | |
-| --- | --- | --- |
-| <img src="assets/brooke-cagle-Ntm4C2lCWxQ-unsplash.jpg" height="300px"> | <img src="assets/timo-volz-ZlFKIG6dApg-unsplash.jpg" height="300px"> | <small>Dog photo by <a href="https://unsplash.com/@brookecagle?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Brooke Cagle</a>, <br/>cat photo by <a href="https://unsplash.com/@magict1911?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Timo Volz</a> <br/>on <a href="https://unsplash.com/?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></small> |
-| <b>OMG you initialized me! <br/>Can I render now, master?</b> |<b>I'll render whenever it suits me, human.</b> | |
+## This repo
 
----
+### ArtnetStore
+...contains logic to pull values out of legend by executing the Arcade expression from the UniqueValueRenderer standalone in the JS code (look for ```arcade.createArcadeExecutor()```).
 
-The point of this repo is to show our pattern of de-coupling the imperative Esri Map object from the rest of the component-based application. 
-* We're using MobX stores for state management throughout the application and React hooks and providers to bring them into the components.
-* The class-based Map gets a Controller for initialization and interoperability functions. The controller is as well distributed via React hook and provider.
+### ArtnetCmp
+Every time the map is stationary, the function ```statisticsLedVals()``` will calculate number of LEDs needed for every legend value. This information is split up into 6 rows, after which every 2nd row is being reversed. Split and reverse happens because the strip was folded several times, running like a snake in 6 rows.
 
+Please note that this piece of code is custom to the strip connected in the above linked video. Depending on what you build, you need to figure out the LED distribution. Some factorization and clipping is applied to make it somehow work better ;)
 
----
+Some nice ideas:
+* Make it big. Make the whole stage, the whole room your map legend.
+* Go to the World Climate Conference, wrap a tree in LEDs, play temporal map data on environmental pollution and show on your tree legend how trees are dying.
+* [...own ideas here ...]
 
-## Configuration
+After each calculation, the data is being sent out to localhost.
+## Other repos needed to make sense of this
 
-Please find the ``config.json`` under ``public/config``!
+### artnet-http
+You can use my fork of Dewb's [``artnet-http`` project](https://github.com/esride-nik/artnet-http) to run a small Node.js application on localhost that receives data from the map, transforms it into Artnet and sends it over to the ESP32.
+
+### esp32_artnet
+Use this ESP32 firmware to receive data from ``artnet-http`` and put it on your LED strip via FastLED.
 
 
 ---
